@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TransactionHeader — Technical Reference</title>
+<script src="script.js" defer></script>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Table Reference</div>
+    <div class="sidebar-title">Transaction<br>Header</div>
+    <div class="sidebar-subtitle">v1.0 · 120+ columns</div>
+  </div>
+
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="Search columns..." id="colSearch">
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-item active" href="#overview">
+      <span class="nav-dot"></span> What is TransactionHeader
+    </a>
+    <a class="nav-item sub" href="#column-reference">
+      <span class="nav-dot"></span> Column Reference
+    </a>
+    <a class="nav-item sub" href="#population-matrix">
+      <span class="nav-dot"></span> Field Population Matrix
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-group-label">Business Lifecycle</div>
+    <a class="nav-item" href="#lifecycle">
+      <span class="nav-dot"></span> Lifecycle Overview
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-group-label">Modules</div>
+
+    <a class="nav-item" href="#presales">
+      <span class="nav-dot"></span> Presales
+      <span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item sub" href="#presales-opportunity">Opportunity</a>
+    <a class="nav-item sub" href="#presales-quote">Quote</a>
+    <a class="nav-item sub" href="#presales-hold">Hold</a>
+    <a class="nav-item sub" href="#presales-sample">Sample Order</a>
+    <a class="nav-item sub" href="#presales-selection">Selection Sheet</a>
+
+    <a class="nav-item" href="#purchases">
+      <span class="nav-dot"></span> Purchases
+      <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item sub" href="#purchases-po">Purchase Order</a>
+    <a class="nav-item sub" href="#purchases-ppr">Pre-Purchase Request</a>
+    <a class="nav-item sub" href="#purchases-vendorpo">Vendor PO</a>
+
+    <a class="nav-item" href="#production">
+      <span class="nav-dot"></span> Production
+    </a>
+
+    <a class="nav-item" href="#inventory">
+      <span class="nav-dot"></span> Inventory
+      <span class="nav-badge">9</span>
+    </a>
+    <a class="nav-item sub" href="#inventory-transfer">Transfer</a>
+    <a class="nav-item sub" href="#inventory-adjustments">Adjustments</a>
+
+    <a class="nav-item" href="#sales">
+      <span class="nav-dot"></span> Sales
+      <span class="nav-badge">4</span>
+    </a>
+    <a class="nav-item sub" href="#sales-so">Sale Order</a>
+    <a class="nav-item sub" href="#sales-invoice">Invoice</a>
+    <a class="nav-item sub" href="#sales-proforma">Proforma Invoice</a>
+    <a class="nav-item sub" href="#sales-return">Return Order</a>
+
+    <a class="nav-item" href="#accounting">
+      <span class="nav-dot"></span> Accounting
+    </a>
+    <a class="nav-item sub" href="#acct-gl">General Ledger</a>
+    <a class="nav-item sub" href="#acct-banking">Banking</a>
+    <a class="nav-item sub" href="#acct-payables">Payables</a>
+    <a class="nav-item sub" href="#acct-receivables">Receivables</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- ════════════════════════════════════
+       SECTION: OVERVIEW
+  ════════════════════════════════════ -->
+  <section class="content-section" id="overview">
+    <div class="section-eyebrow">Core Concept</div>
+    <h1 class="section-title">What is TransactionHeader?</h1>
+    <p class="section-desc">
+      A single, universal table that captures the header-level record of every business event — regardless of department, type, or lifecycle stage.
+    </p>
+
+    <div class="hero-box">
+      <div class="hero-box-title">Technical Definition</div>
+      <p class="hero-box-text">
+        <strong>TransactionHeader (TH)</strong> is the central table in the system where every business interaction is registered. Whether it's a presale quote, a purchase order, an inventory transfer, a customer invoice, or a banking receipt — every single one of them creates exactly one row in TransactionHeader.<br><br>
+        Think of it like an <strong>envelope</strong>: TH stores the "outside of the envelope" — who it's from, who it's to, what type it is, when it was created, what status it's in, and how much it's worth. The detailed contents (line items, products, amounts) live in child tables that link back to this header via the <code style="font-family:var(--font-mono); font-size:13px; background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:3px; color:#f0c86a">ID</code> field.<br><br>
+        The same table serves <strong>Presales, Purchases, Inventory, Sales, and Accounting</strong> — unified by the <code style="font-family:var(--font-mono); font-size:13px; background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:3px; color:#f0c86a">TransactionType</code> + <code style="font-family:var(--font-mono); font-size:13px; background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:3px; color:#f0c86a">TransactionSubType</code> + <code style="font-family:var(--font-mono); font-size:13px; background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:3px; color:#f0c86a">SpecialType</code> trio which precisely identifies what the transaction is.
+      </p>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">120+</span>
+        <div class="hero-stat-label">Total Columns</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">10</span>
+        <div class="hero-stat-label">Transaction Types</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">40+</span>
+        <div class="hero-stat-label">Sub Types</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">6</span>
+        <div class="hero-stat-label">Business Modules</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card amber">
+        <div class="info-card-label">How to Read a Transaction</div>
+        <div class="info-card-value">Every TH row is uniquely identified by its <strong>ID</strong> (backend) and <strong>TransactionNumber</strong> (frontend). The <strong>Type → SubType → SpecialType</strong> chain tells you exactly what kind of event it is.</div>
+      </div>
+      <div class="info-card teal">
+        <div class="info-card-label">Transaction Lineage</div>
+        <div class="info-card-value">Transactions are linked. A Quote has a <strong>ParentTransactionID</strong> pointing to the Opportunity. A SO points back to the Quote. An Invoice points to the SO. This chain is tracked via <strong>SourceTransactionID</strong> to the origin.</div>
+      </div>
+      <div class="info-card purple">
+        <div class="info-card-label">Columns Don't All Apply</div>
+        <div class="info-card-value">Not every column is used for every transaction type. Many columns are <strong>conditionally populated</strong> depending on the TransactionType. See the Field Population Matrix for a visual guide.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+       SECTION: COLUMN REFERENCE
+  ════════════════════════════════════ -->
+  <section class="content-section" id="column-reference">
+    <div class="section-eyebrow">Schema</div>
+    <h2 class="section-title">Column Reference</h2>
+    <p class="section-desc">All columns grouped by functional category. Each entry shows data type, nullability, description, which modules use it, and example values.</p>
+
+    <!-- TABLE VERSION -->
+<div class="table-wrap">
+  <table class="col-table">
+
+    <thead>
+      <tr>
+        <th class="sticky-header">Column Name</th>
+        <th class="sticky-header">Type</th>
+        <th class="sticky-header">Nullable</th>
+        <th class="sticky-header">Description</th>
+        <th class="sticky-header">Values</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <!-- ================= IDENTITY ================= -->
+      <tr class="group-row"><td colspan="5">🔑 Identity & Tracking</td></tr>
+
+      <tr>
+        <td>ID</td>
+        <td>INT</td>
+        <td>NO</td>
+        <td>ID is a backend auto-incrementing number generated whenever a new transaction is created. It is primarily used internally and appears in URLs to directly access a transaction but is not meant for business-level identification.</td>
+        <td>Auto Increment</td>
+      </tr>
+
+      <tr>
+        <td>TransactionNumber</td>
+        <td>VARCHAR</td>
+        <td>NO</td>
+        <td>A unique identifier used in the frontend to represent the transaction. It is also used to bind multiple related transactions such as quotes under a single opportunity.</td>
+        <td>Q-XXXX, SO-XXXX</td>
+      </tr>
+
+      <tr>
+        <td>TransactionDate</td>
+        <td>DATE</td>
+        <td>NO</td>
+        <td>The business date on which the transaction like PO, SO, or Invoice was issued. This is used for reporting and accounting rather than system tracking.</td>
+        <td>Date</td>
+      </tr>
+
+      <tr>
+        <td>TransactionTime</td>
+        <td>TIME</td>
+        <td>YES</td>
+        <td>The exact time at which the transaction was recorded in the system, complementing the transaction date for precise tracking.</td>
+        <td>HH:MM:SS</td>
+      </tr>
+
+      <tr>
+        <td>CreatedOn</td>
+        <td>DATETIME</td>
+        <td>NO</td>
+        <td>The timestamp representing when the transaction record was created in the system.</td>
+        <td>Datetime</td>
+      </tr>
+
+      <tr>
+        <td>CreatedBy</td>
+        <td>FK</td>
+        <td>NO</td>
+        <td>The user who created the transaction, used for audit and tracking purposes.</td>
+        <td>User ID</td>
+      </tr>
+
+      <tr>
+        <td>UpdatedOn</td>
+        <td>DATETIME</td>
+        <td>YES</td>
+        <td>The timestamp when the transaction was last modified, helping track updates over time.</td>
+        <td>Datetime</td>
+      </tr>
+
+      <tr>
+        <td>UpdatedBy</td>
+        <td>FK</td>
+        <td>YES</td>
+        <td>The user who last updated the transaction record.</td>
+        <td>User ID</td>
+      </tr>
+
+      <!-- ================= CLASSIFICATION ================= -->
+      <tr class="group-row"><td colspan="5">🏷️ Classification</td></tr>
+
+      <tr>
+        <td>TransactionType</td>
+        <td>ENUM</td>
+        <td>NO</td>
+        <td>Defines which module the transaction belongs to such as Sales, Purchase, Banking, or Accounting, and drives system behavior and workflows.</td>
+        <td>Accounting, Banking, Inventory, Payable, PreSale, Purchase, Sale, Year End Closing</td>
+      </tr>
+
+      <tr>
+        <td>PartyType</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Specifies the type of party involved in the transaction, indicating whether it is a customer, supplier, vendor, or internal entity.</td>
+        <td>Supplier, Customer, Vendor, Journal, Location</td>
+      </tr>
+
+      <tr>
+        <td>TransactionSubType</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Defines the specific type of transaction within a TransactionType, such as Invoice, Quote, or PO, and controls detailed workflow behavior.</td>
+        <td>Quote, Invoice, PO, Transfer, VendorPO, etc.</td>
+      </tr>
+
+      <tr>
+        <td>SpecialType</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Further categorizes transactions beyond subtype to define special cases such as AR-Invoices, Deposits, or Debit Memo scenarios.</td>
+        <td>AR-Invoices, Deposit, Reverse, Vendor AP, etc.</td>
+      </tr>
+
+      <tr>
+        <td>TransactionStage</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Represents the stage of the transaction in the business lifecycle, particularly useful in presales workflows to track progress.</td>
+        <td>Follow-up, Quoted, Accepted, Delivered, etc.</td>
+      </tr>
+
+      <tr>
+        <td>TransactionStatus</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Provides a high-level status of the transaction such as accepted, closed, or cancelled, and is used for filtering and reporting.</td>
+        <td>Accepted, Closed, Cancelled, On Hold, etc.</td>
+      </tr>
+
+      <!-- ================= LINEAGE ================= -->
+      <tr class="group-row"><td colspan="5">🔗 Transaction Lineage</td></tr>
+
+      <tr>
+        <td>TransactionSubID</td>
+        <td>INT</td>
+        <td>YES</td>
+        <td>Tracks the number of sub-transactions created under a parent transaction, such as multiple quotes under one opportunity.</td>
+        <td>1,2,3...</td>
+      </tr>
+
+      <tr>
+        <td>ParentTransactionID</td>
+        <td>FK</td>
+        <td>YES</td>
+        <td>Stores the transaction number of the immediate parent transaction, enabling hierarchical linking of related transactions.</td>
+        <td>TransactionNumber</td>
+      </tr>
+
+      <tr>
+        <td>SourceTransactionID</td>
+        <td>FK</td>
+        <td>YES</td>
+        <td>Identifies the original transaction from which the entire process started, ensuring traceability across the lifecycle.</td>
+        <td>TransactionNumber</td>
+      </tr>
+
+      <!-- ================= FINANCIAL ================= -->
+      <tr class="group-row"><td colspan="5">💰 Financial</td></tr>
+
+      <tr>
+        <td>Total</td>
+        <td>DECIMAL</td>
+        <td>YES</td>
+        <td>Total monetary value of the transaction in the company’s currency including all applicable costs.</td>
+        <td>Amount</td>
+      </tr>
+
+      <tr>
+        <td>Balance</td>
+        <td>DECIMAL</td>
+        <td>YES</td>
+        <td>Remaining unpaid amount after deducting payments from the total transaction value.</td>
+        <td>Amount</td>
+      </tr>
+
+      <tr>
+        <td>ForeignTotal</td>
+        <td>DECIMAL</td>
+        <td>YES</td>
+        <td>Total value of the transaction in the customer’s currency.</td>
+        <td>Amount</td>
+      </tr>
+
+      <tr>
+        <td>ForeignBalance</td>
+        <td>DECIMAL</td>
+        <td>YES</td>
+        <td>Remaining balance in the customer’s currency.</td>
+        <td>Amount</td>
+      </tr>
+
+      <!-- ================= LOGISTICS ================= -->
+      <tr class="group-row"><td colspan="5">🚚 Logistics</td></tr>
+
+      <tr>
+        <td>DeliveryType</td>
+        <td>ENUM</td>
+        <td>YES</td>
+        <td>Specifies how the customer wants the goods delivered, influencing logistics and fulfillment workflows.</td>
+        <td>Pick-up, Delivery, Drop-ship, Install</td>
+      </tr>
+
+      <tr>
+        <td>ShippingTrackingNumber</td>
+        <td>VARCHAR</td>
+        <td>YES</td>
+        <td>A tracking number used to monitor shipment progress and delivery status.</td>
+        <td>Tracking ID</td>
+      </tr>
+
+      <!-- ================= NOTES ================= -->
+      <tr class="group-row"><td colspan="5">📝 Notes</td></tr>
+
+      <tr>
+        <td>InternalNotes</td>
+        <td>TEXT</td>
+        <td>YES</td>
+        <td>Internal notes meant only for employees to provide context, instructions, or warnings related to the transaction.</td>
+        <td>-</td>
+      </tr>
+
+      <tr>
+        <td>PrintedNotes</td>
+        <td>TEXT</td>
+        <td>YES</td>
+        <td>Notes visible to customers and printed on documents, typically used for instructions or agreements.</td>
+        <td>-</td>
+      </tr>
+
+<!-- ================= ACCOUNTING / BILLING ================= -->
+<tr class="group-row"><td colspan="5">🏦 Accounting / Billing</td></tr>
+
+<tr><td>AccountingPartyID</td><td>FK</td><td>YES</td><td>Represents the billing customer’s unique identifier used to associate the transaction with the correct financial entity responsible for payment.</td><td>Party ID</td></tr>
+<tr><td>AccountingPartyName</td><td>VARCHAR</td><td>YES</td><td>The name of the billing customer company associated with the transaction, used for display and documentation purposes.</td><td>Company Name</td></tr>
+<tr><td>AccountingAttn</td><td>VARCHAR</td><td>YES</td><td>The representative or contact person from the billing customer company responsible for communication regarding the transaction.</td><td>Person Name</td></tr>
+<tr><td>AccountingAddress</td><td>VARCHAR</td><td>YES</td><td>The primary street address of the billing customer where invoices and financial documents are associated.</td><td>Street Address</td></tr>
+<tr><td>AccountingAddress2</td><td>VARCHAR</td><td>YES</td><td>Additional address details such as suite or unit number that provide more precise billing location information.</td><td>Suite / Unit</td></tr>
+<tr><td>AccountingCity</td><td>VARCHAR</td><td>YES</td><td>The city in which the billing customer is located.</td><td>City Name</td></tr>
+<tr><td>AccountingState</td><td>VARCHAR</td><td>YES</td><td>The state of the billing customer’s address.</td><td>State</td></tr>
+<tr><td>AccountingZip</td><td>VARCHAR</td><td>YES</td><td>The ZIP or postal code for the billing address.</td><td>ZIP</td></tr>
+<tr><td>AccountingCountry</td><td>VARCHAR</td><td>YES</td><td>The country where the billing customer is located.</td><td>Country</td></tr>
+<tr><td>AccountingPhone1</td><td>VARCHAR</td><td>YES</td><td>The primary landline contact number for the billing customer.</td><td>Phone</td></tr>
+<tr><td>AccountingFax</td><td>VARCHAR</td><td>YES</td><td>The fax number associated with the billing customer.</td><td>Fax</td></tr>
+<tr><td>AccountingEmail</td><td>VARCHAR</td><td>YES</td><td>Email address of the billing customer used for communication and document sharing.</td><td>Email</td></tr>
+<tr><td>AccountingMobile</td><td>VARCHAR</td><td>YES</td><td>The mobile contact number of the billing customer or representative.</td><td>Mobile</td></tr>
+
+<!-- ================= SHIPPING ================= -->
+<tr class="group-row"><td colspan="5">🚚 Shipping Details</td></tr>
+
+<tr><td>ShipToPartyID</td><td>FK</td><td>YES</td><td>The party ID of the customer where the goods are to be delivered.</td><td>Party ID</td></tr>
+<tr><td>ShipToContactID</td><td>FK</td><td>YES</td><td>The contact ID of the shipping customer representative.</td><td>Contact ID</td></tr>
+<tr><td>ShipToName</td><td>VARCHAR</td><td>YES</td><td>The company name of the shipping destination.</td><td>Company Name</td></tr>
+<tr><td>ShipToAttn</td><td>VARCHAR</td><td>YES</td><td>The name of the person receiving the shipment at the destination.</td><td>Person Name</td></tr>
+<tr><td>ShipToAddress</td><td>VARCHAR</td><td>YES</td><td>The primary street address of the shipping location.</td><td>Address</td></tr>
+<tr><td>ShipToAddress2</td><td>VARCHAR</td><td>YES</td><td>Additional address details like suite or apartment number.</td><td>Suite</td></tr>
+<tr><td>ShipToCity</td><td>VARCHAR</td><td>YES</td><td>The city to which goods are being shipped.</td><td>City</td></tr>
+<tr><td>ShipToState</td><td>VARCHAR</td><td>YES</td><td>The state of the shipping location.</td><td>State</td></tr>
+<tr><td>ShipToZip</td><td>VARCHAR</td><td>YES</td><td>The postal or ZIP code of the shipping location.</td><td>ZIP</td></tr>
+<tr><td>ShipToCountry</td><td>VARCHAR</td><td>YES</td><td>The country of the shipping destination.</td><td>Country</td></tr>
+<tr><td>ShipToPhone1</td><td>VARCHAR</td><td>YES</td><td>Primary phone number for the shipping location.</td><td>Phone</td></tr>
+<tr><td>ShipToPhone2</td><td>VARCHAR</td><td>YES</td><td>Secondary phone number for the shipping location.</td><td>Mobile</td></tr>
+<tr><td>ShipToFax</td><td>VARCHAR</td><td>YES</td><td>Fax number of the shipping location.</td><td>Fax</td></tr>
+<tr><td>ShipToEmail</td><td>VARCHAR</td><td>YES</td><td>Email address for shipment communication.</td><td>Email</td></tr>
+
+<!-- ================= PROJECT ================= -->
+<tr class="group-row"><td colspan="5">🏗️ Project & Marketing</td></tr>
+
+<tr><td>JobName</td><td>VARCHAR</td><td>YES</td><td>The descriptive name of the customer’s project which helps identify the scope and location of work.</td><td>Project Name</td></tr>
+<tr><td>EnduseSegment</td><td>FK</td><td>YES</td><td>Identifies the industry or market segment the customer belongs to for analytics and segmentation.</td><td>Retail, Commercial, etc.</td></tr>
+<tr><td>ProjectType</td><td>FK</td><td>YES</td><td>Specifies how and where the products are being used within the customer’s project.</td><td>Renovation, Construction</td></tr>
+<tr><td>MarketingChannel</td><td>VARCHAR</td><td>YES</td><td>Indicates the source through which the customer discovered the company.</td><td>Referral, Online</td></tr>
+<tr><td>ContactMode</td><td>ENUM</td><td>YES</td><td>Specifies how the customer prefers communication with the company.</td><td>WalkIn, Phone, Email</td></tr>
+
+<!-- ================= TAX ================= -->
+<tr class="group-row"><td colspan="5">📊 Tax</td></tr>
+
+<tr><td>TaxItemID</td><td>FK</td><td>YES</td><td>Defines the tax rate applied to the transaction which can vary based on customer or location.</td><td>Tax ID</td></tr>
+<tr><td>TaxExemptReason</td><td>TEXT</td><td>YES</td><td>Specifies the reason why tax is not applied for the customer or transaction.</td><td>Reason</td></tr>
+<tr><td>IsTaxExempt</td><td>BOOLEAN</td><td>YES</td><td>Indicates whether the transaction is exempt from tax.</td><td>0 / 1</td></tr>
+
+<!-- ================= DATES ================= -->
+<tr class="group-row"><td colspan="5">📅 Dates</td></tr>
+
+<tr><td>ESTDeliveryDate</td><td>DATE</td><td>YES</td><td>The estimated date when the customer is expected to receive the goods.</td><td>Date</td></tr>
+<tr><td>RequestedShipDate</td><td>DATE</td><td>YES</td><td>The requested date for shipping the goods.</td><td>Date</td></tr>
+<tr><td>CloseDate</td><td>DATE</td><td>YES</td><td>The date when the transaction was officially closed.</td><td>Date</td></tr>
+
+<!-- ================= AUDIT ================= -->
+<tr class="group-row"><td colspan="5">🔒 Audit & Control</td></tr>
+
+<tr><td>AuthorizationNumber</td><td>VARCHAR</td><td>YES</td><td>A unique code used to verify that the transaction or adjustment was authorized.</td><td>Code</td></tr>
+<tr><td>IsPaymentHold</td><td>BOOLEAN</td><td>YES</td><td>Indicates whether the payment for the transaction is currently on hold.</td><td>0 / 1</td></tr>
+<tr><td>PaymentHoldReason</td><td>TEXT</td><td>YES</td><td>Provides the reason why the payment has been placed on hold.</td><td>Reason</td></tr>
+
+<!-- ================= SHIPPING EXTRA ================= -->
+<tr class="group-row"><td colspan="5">🚢 Shipment & Tracking</td></tr>
+
+<tr><td>ContainerNumber</td><td>VARCHAR</td><td>YES</td><td>Identifier of the shipping container used to transport goods.</td><td>MSCUXXXX</td></tr>
+<tr><td>BOLDate</td><td>DATE</td><td>YES</td><td>Date when goods were handed over to the carrier, acting as legal proof of shipment.</td><td>Date</td></tr>
+<tr><td>InventoryReceivedDate</td><td>DATE</td><td>YES</td><td>Date when goods were received into company inventory.</td><td>Date</td></tr>
+<tr><td>InventoryETADate</td><td>DATE</td><td>YES</td><td>Estimated arrival date of goods into inventory.</td><td>Date</td></tr>
+
+<!-- ================= EXTRA ================= -->
+<tr class="group-row"><td colspan="5">⚙️ Miscellaneous</td></tr>
+
+<tr><td>CustomerReference</td><td>VARCHAR</td><td>YES</td><td>Links transactions to a specific customer across multiple modules.</td><td>Reference ID</td></tr>
+<tr><td>SaleOrderReference</td><td>VARCHAR</td><td>YES</td><td>Links related transactions back to a specific Sale Order.</td><td>SO ID</td></tr>
+<tr><td>FreightForwarder</td><td>FK</td><td>YES</td><td>Represents the party responsible for shipping goods to the customer.</td><td>Party ID</td></tr>
+<tr><td>CommissionAmount</td><td>DECIMAL</td><td>YES</td><td>The commission paid to the referring party.</td><td>Amount</td></tr>
+<tr><td>CommissionNotes</td><td>TEXT</td><td>YES</td><td>Notes related to commission details.</td><td>-</td></tr>
+
+
+
+<!-- ================= PAYMENT / TERMS ================= -->
+<tr class="group-row"><td colspan="5">💳 Payment & Terms</td></tr>
+
+<tr><td>ShipmentTerms</td><td>VARCHAR</td><td>YES</td><td>Defines the conditions under which goods are shipped including responsibilities and obligations between parties.</td><td>Terms</td></tr>
+<tr><td>PaymentTerms</td><td>VARCHAR</td><td>YES</td><td>Specifies how and when the customer is expected to make payment for the transaction.</td><td>Net 30, Advance</td></tr>
+<tr><td>TermsID</td><td>FK</td><td>YES</td><td>Reference ID linking to predefined payment and shipment terms stored in the system.</td><td>ID</td></tr>
+<tr><td>Terms</td><td>TEXT</td><td>YES</td><td>Detailed textual representation of all applicable terms including payment, currency, and location conditions.</td><td>Name, PaymentTerms, Currency</td></tr>
+<tr><td>ConversionRate</td><td>DECIMAL</td><td>YES</td><td>Represents the conversion rate between customer currency and company currency.</td><td>Rate</td></tr>
+<tr><td>CurrencyID</td><td>FK</td><td>YES</td><td>Identifier for the currency used by the customer in the transaction.</td><td>Currency Code</td></tr>
+
+<!-- ================= TIME ================= -->
+<tr class="group-row"><td colspan="5">⏱️ Time Tracking</td></tr>
+
+<tr><td>StartTime</td><td>TIME</td><td>YES</td><td>Represents when the process or activity related to the transaction started.</td><td>Time</td></tr>
+<tr><td>EndTime</td><td>TIME</td><td>YES</td><td>Represents when the process or activity related to the transaction ended.</td><td>Time</td></tr>
+<tr><td>CheckoutTime</td><td>TIME</td><td>YES</td><td>Time when the transaction, especially a quote, was placed on hold or checkout stage.</td><td>Time</td></tr>
+
+<!-- ================= BANKING ================= -->
+<tr class="group-row"><td colspan="5">🏦 Banking</td></tr>
+
+<tr><td>DepositNumber</td><td>VARCHAR</td><td>YES</td><td>Identifier for deposits made by customers associated with the transaction.</td><td>Deposit ID</td></tr>
+<tr><td>InvoiceNumber</td><td>VARCHAR</td><td>YES</td><td>Invoice number issued by the company used for linking transactions like return orders and credit memos.</td><td>INV-XXXX</td></tr>
+<tr><td>BankAccountID</td><td>FK</td><td>YES</td><td>The bank account of the company involved in the transaction.</td><td>Account ID</td></tr>
+<tr><td>WiringInstructionID</td><td>FK</td><td>YES</td><td>Stores instructions related to wire transfer payments.</td><td>ID</td></tr>
+
+<!-- ================= APPROVAL ================= -->
+<tr class="group-row"><td colspan="5">✅ Approval & Workflow</td></tr>
+
+<tr><td>Transaction_ApproveDate</td><td>DATE</td><td>YES</td><td>Date when the transaction was approved by the relevant party.</td><td>Date</td></tr>
+<tr><td>Transaction_DisapprovedDate</td><td>DATE</td><td>YES</td><td>Date when the transaction was disapproved.</td><td>Date</td></tr>
+<tr><td>Transaction_Approved_DisapprovedBy</td><td>FK</td><td>YES</td><td>Identifies the user who approved or disapproved the transaction.</td><td>User ID</td></tr>
+<tr><td>Transaction_Approved_Disapprove_Notes</td><td>TEXT</td><td>YES</td><td>Notes explaining why the transaction was approved or rejected.</td><td>-</td></tr>
+
+<!-- ================= FLAGS ================= -->
+<tr class="group-row"><td colspan="5">🚩 Flags & Indicators</td></tr>
+
+<tr><td>NoEmailUpdate</td><td>BOOLEAN</td><td>YES</td><td>Indicates whether the customer has opted out of receiving email updates for the transaction.</td><td>0 / 1</td></tr>
+<tr><td>IsCOD</td><td>BOOLEAN</td><td>YES</td><td>Specifies whether the transaction is Cash on Delivery.</td><td>0 / 1</td></tr>
+<tr><td>IsSupplierConsignment</td><td>BOOLEAN</td><td>YES</td><td>Indicates if the products involved are supplier consignment goods.</td><td>0 / 1</td></tr>
+
+<!-- ================= OWNERSHIP ================= -->
+<tr class="group-row"><td colspan="5">👥 Ownership & Responsibility</td></tr>
+
+<tr><td>ClosedBy</td><td>FK</td><td>YES</td><td>The employee who closed the transaction.</td><td>User ID</td></tr>
+<tr><td>RequestedBy</td><td>FK</td><td>YES</td><td>Indicates who initiated or requested the transaction.</td><td>User ID</td></tr>
+<tr><td>InventoryReceivedBy</td><td>FK</td><td>YES</td><td>The person who received the inventory into the system.</td><td>User ID</td></tr>
+
+<!-- ================= SHIPPING EXTRA ================= -->
+<tr class="group-row"><td colspan="5">📦 Fulfillment</td></tr>
+
+<tr><td>FullfilledDate</td><td>DATE</td><td>YES</td><td>Date when the entire transaction or order was fulfilled.</td><td>Date</td></tr>
+<tr><td>FulfillmentPercent</td><td>DECIMAL</td><td>YES</td><td>Indicates the percentage of completion of the transaction fulfillment.</td><td>0-100%</td></tr>
+<tr><td>FulFilledNotes</td><td>TEXT</td><td>YES</td><td>Additional notes recorded during fulfillment.</td><td>-</td></tr>
+<tr><td>PackingListDate</td><td>DATE</td><td>YES</td><td>Date when the packing list was created.</td><td>Date</td></tr>
+
+<!-- ================= ROUTING ================= -->
+<tr class="group-row"><td colspan="5">🗺️ Routing & Logistics</td></tr>
+
+<tr><td>RouteID</td><td>FK</td><td>YES</td><td>Links the transaction to a route or region for logistics planning.</td><td>ID</td></tr>
+<tr><td>Urgency</td><td>INT</td><td>YES</td><td>Represents the priority level of the transaction, where higher values indicate higher urgency.</td><td>Number</td></tr>
+<tr><td>ShipmentMethod</td><td>VARCHAR</td><td>YES</td><td>Defines the method used for shipping the goods.</td><td>Air, Road, Sea</td></tr>
+
+<!-- ================= RELATIONSHIP ================= -->
+<tr class="group-row"><td colspan="5">🔗 Relationships</td></tr>
+
+<tr><td>SourceTransactionNumber</td><td>VARCHAR</td><td>YES</td><td>The transaction number where the lifecycle originated.</td><td>TN</td></tr>
+<tr><td>ParentTransactionNumber</td><td>VARCHAR</td><td>YES</td><td>The transaction number of the immediate parent.</td><td>TN</td></tr>
+<tr><td>PartyPOorSO</td><td>VARCHAR</td><td>YES</td><td>Stores the customer’s PO or SO for linking purposes between systems.</td><td>Reference</td></tr>
+
+<!-- ================= PEOPLE NAMES ================= -->
+<tr class="group-row"><td colspan="5">👤 Display Names</td></tr>
+
+<tr><td>SalePersonIDName</td><td>VARCHAR</td><td>YES</td><td>Name of the primary salesperson.</td><td>Name</td></tr>
+<tr><td>SalesPerson2IDName</td><td>VARCHAR</td><td>YES</td><td>Name of the secondary salesperson.</td><td>Name</td></tr>
+<tr><td>LocationPartyIDName</td><td>VARCHAR</td><td>YES</td><td>Name of the company location involved in the transaction.</td><td>Location</td></tr>
+<tr><td>CreatedByName</td><td>VARCHAR</td><td>YES</td><td>Name of the user who created the transaction.</td><td>Name</td></tr>
+
+<!-- ================= VOID ================= -->
+<tr class="group-row"><td colspan="5">❌ Void & Closure</td></tr>
+
+<tr><td>VoidedBy</td><td>FK</td><td>YES</td><td>Identifies who voided the transaction.</td><td>User ID</td></tr>
+<tr><td>VoidedOn</td><td>DATE</td><td>YES</td><td>Date when the transaction was voided.</td><td>Date</td></tr>
+<tr><td>ClosedNotes</td><td>TEXT</td><td>YES</td><td>Notes recorded when the transaction was closed.</td><td>-</td></tr>
+
+<!-- ================= EXTRA ================= -->
+<tr class="group-row"><td colspan="5">⚙️ Additional Fields</td></tr>
+
+<tr><td>BatchID</td><td>VARCHAR</td><td>YES</td><td>Identifier used for grouping transactions into batches.</td><td>ID</td></tr>
+<tr><td>Weight</td><td>DECIMAL</td><td>YES</td><td>Total weight of goods involved in the transaction.</td><td>Weight</td></tr>
+<tr><td>Lot</td><td>VARCHAR</td><td>YES</td><td>Lot number associated with the products.</td><td>Lot</td></tr>
+<tr><td>Subdivision</td><td>VARCHAR</td><td>YES</td><td>Represents subdivision or grouping of products or locations.</td><td>Value</td></tr>
+<tr><td>ReasonCode</td><td>VARCHAR</td><td>YES</td><td>Stores the reason associated with specific actions like voiding or adjustments.</td><td>Code</td></tr>
+
+<!-- ================= TAX HEADER ================= -->
+<tr class="group-row"><td colspan="5">📊 Tax Summary</td></tr>
+
+<tr><td>THeaderTaxRate</td><td>DECIMAL</td><td>YES</td><td>Tax rate applied at the transaction header level.</td><td>%</td></tr>
+<tr><td>THeaderTax</td><td>DECIMAL</td><td>YES</td><td>Total tax amount applied to the transaction.</td><td>Amount</td></tr>
+<tr><td>IsUseTax</td><td>BOOLEAN</td><td>YES</td><td>Indicates whether use tax is applicable.</td><td>0 / 1</td></tr>
+<tr><td>UseTaxItemID</td><td>FK</td><td>YES</td><td>Reference ID for use tax configuration.</td><td>ID</td></tr>
+
+<!-- ================= FINAL ================= -->
+<tr class="group-row"><td colspan="5">🏁 Final</td></tr>
+
+<tr><td>TransactionCode</td><td>VARCHAR</td><td>YES</td><td>A code representing the transaction for internal or external reference.</td><td>Code</td></tr>
+<tr><td>TLegacyID</td><td>VARCHAR</td><td>YES</td><td>Legacy system identifier used for migration or backward compatibility.</td><td>ID</td></tr>
+
+    </tbody>
+  </table>
+</div>
+
+  </section>
+
+  <!-- ════════════════════════════════════
+       SECTION: POPULATION MATRIX
+  ════════════════════════════════════ -->
+<section class="content-section" id="population-matrix">
+  <div class="section-eyebrow">Field Usage</div>
+  <h2 class="section-title">Field Population Matrix</h2>
+
+  <p class="section-desc">
+    Which columns are populated for each TransactionType. 
+    Teal = required, light = optional/conditional, dash = not applicable.
+  </p>
+
+  <div class="matrix-container">
+    <table class="matrix-table" id="matrixTable">
+
+      <thead>
+        <tr>
+          <th class="sticky-header" style="z-index: 5;">
+            Column
+            <button class="collapse-btn" onclick="toggleMatrix()">▾</button>
+          </th>
+          <th class="sticky-header">PreSale</th>
+          <th class="sticky-header">Purchase</th>
+          <th class="sticky-header">Sale</th>
+          <th class="sticky-header">Inventory</th>
+          <th class="sticky-header">Payable</th>
+          <th class="sticky-header">Banking</th>
+          <th class="sticky-header">Accounting</th>
+        </tr>
+      </thead>
+
+      <tbody id="matrixBody"></tbody>
+
+    </table>
+  </div>
+
+  <div class="matrix-legend">
+    <div class="legend-item"><span class="dot req"></span> Required</div>
+    <div class="legend-item"><span class="dot opt"></span> Optional</div>
+    <div class="legend-item"><span class="dot na">–</span> Not Applicable</div>
+  </div>
+</section>
+
+  <!-- ════════════════════════════════════
+       SECTION: LIFECYCLE
+  ════════════════════════════════════ -->
+<section class="content-section lc-root" id="lifecycle">
+  <div class="section-eyebrow">Business Flow</div>
+  <h2 class="section-title">Business Lifecycle</h2>
+  <p class="section-desc">
+    A transaction flows through multiple stages. It may follow different paths depending on whether goods are manufactured or purchased.
+  </p>
+
+  <!-- MAIN FLOW -->
+<!-- ════════════════════════════════════
+     SECTION: LIFECYCLE  (drop-in replacement)
+     Paste this entire block in place of your existing
+     <section class="content-section" id="lifecycle"> ... </section>
+════════════════════════════════════ -->
+  <div class="section-eyebrow">Business Flow</div>
+  <h2 class="section-title">Business Lifecycle</h2>
+  <p class="section-desc">
+    Every transaction written to <code style="font-family:var(--font-mono);font-size:13px;background:rgba(255,255,255,.08);padding:1px 6px;border-radius:3px;color:#f0c86a">TransactionHeader</code> lives inside one of six modules below.
+    Follow the arrows — each step is one row in the table. Click any module header to expand its full step-by-step flow.
+  </p>
+
+  <!-- ════ MODULE 01 · PRESALES ════ -->
+  <div class="lc-module lc-m-presale open" id="lc-presale">
+    <div class="lc-mod-header" onclick="lcToggle('lc-presale')">
+      <span class="lc-mod-num">01</span>
+      <div class="lc-mod-icon">💬</div>
+      <div>
+        <div class="lc-mod-title">Presales</div>
+        <div class="lc-mod-subtitle">All customer activity before a sale is confirmed</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">TransactionType = PreSale</span>
+        <span class="lc-tx-pill">PartyType = Customer</span>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <div class="lc-flow" id="lc-presale-flow">
+
+        <!-- OPPORTUNITY -->
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">🎯</span>
+            <span class="lc-node-label">Opportunity</span>
+            <span class="lc-node-sub">entry point</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Opportunity</div>
+  <div class="lc-tooltip-desc">
+    A qualified prospect that has shown real interest in your product or service. 
+    At this stage, the customer has a clear requirement, potential budget, and 
+    decision-making authority. This is the starting point of the business lifecycle 
+    where tracking and follow-ups begin.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">any step can start here</div></div>
+
+        <!-- QUOTE -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📋</span>
+            <span class="lc-node-label">Quote</span>
+            <span class="lc-node-sub">ParentID = OPP</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Quote</div>
+  <div class="lc-tooltip-desc">
+    A formal pricing document shared with the customer based on their requirements. 
+    It includes products, quantities, pricing, and terms. This step converts interest 
+    into a tangible offer and is often linked to an Opportunity.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">optional</div></div>
+
+        <!-- VISIT -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🏠</span>
+            <span class="lc-node-label">Visit</span>
+            <span class="lc-node-sub">site visit</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Visit</div>
+  <div class="lc-tooltip-desc">
+    A physical or virtual interaction with the customer to understand requirements, 
+    take measurements, or finalize decisions. This step helps refine the scope before 
+    proceeding further.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">optional</div></div>
+
+        <!-- SELECTION SHEET -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📐</span>
+            <span class="lc-node-label">Selection Sheet</span>
+            <span class="lc-node-sub">product review</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Selection Sheet</div>
+            <div class="lc-tooltip-desc">SubType = SelectionSheet<br>Stage = Selection</div>
+          </div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">optional</div></div>
+
+        <!-- SAMPLE -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🧪</span>
+            <span class="lc-node-label">Sample Order</span>
+            <span class="lc-node-sub">for approval</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Sample</div>
+  <div class="lc-tooltip-desc">
+    A sample product is provided to the customer for evaluation and approval. 
+    This ensures confidence in quality, finish, or specifications before committing 
+    to a full order.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">optional</div></div>
+
+        <!-- HOLD -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🔒</span>
+            <span class="lc-node-label">Hold</span>
+            <span class="lc-node-sub">reserve inventory</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Hold</div>
+  <div class="lc-tooltip-desc">
+    Inventory is temporarily reserved for the customer without confirming the sale. 
+    This prevents stock from being sold elsewhere while the customer finalizes their decision.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">accepted</div></div>
+
+        <!-- ACCEPTED / END -->
+        <div class="lc-step">
+          <div class="lc-node" style="border-style: dashed; opacity:.8">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Quote Accepted</span>
+            <span class="lc-node-sub">→ triggers SO</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Accepted Quote</div>
+            <div class="lc-tooltip-desc">TransactionStatus = Accepted<br>Stage = Accepted<br>Triggers Sale Order creation</div>
+          </div>
+        </div>
+
+      </div>
+
+      <p style="font-size:11px;opacity:.45;margin-top:4px;">
+        ⓘ  Steps can be skipped or reordered — not every opportunity needs all stages. Any step can be the starting point.
+      </p>
+
+      <div class="lc-status-row">
+        <span class="lc-status">Stage: Follow-up</span>
+        <span class="lc-status">→ Quoted</span>
+        <span class="lc-status">→ Visit</span>
+        <span class="lc-status">→ Selection</span>
+        <span class="lc-status">→ Sample</span>
+        <span class="lc-status">→ Hold</span>
+        <span class="lc-status active">→ Accepted ✓</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ MODULE 02 · PURCHASES ════ -->
+  <div class="lc-module lc-m-purchase" id="lc-purchase">
+    <div class="lc-mod-header" onclick="lcToggle('lc-purchase')">
+      <span class="lc-mod-num">02</span>
+      <div class="lc-mod-icon">📦</div>
+      <div>
+        <div class="lc-mod-title">Purchases</div>
+        <div class="lc-mod-subtitle">Sourcing goods from suppliers and vendors</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">TransactionType = Purchase</span>
+        <span class="lc-tx-pill">PartyType = Supplier / Vendor</span>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <div class="lc-flow" id="lc-purchase-flow">
+
+        <!-- PRE-PURCHASE -->
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">📝</span>
+            <span class="lc-node-label">Pre-Purchase Request</span>
+            <span class="lc-node-sub">internal initiation</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Pre-Purchase Request</div>
+            <div class="lc-tooltip-desc">SubType = Pre-Purchase Request<br>Status = To Be Purchased</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">approved</div></div>
+
+        <!-- PURCHASE ORDER -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🧾</span>
+            <span class="lc-node-label">Purchase Order</span>
+            <span class="lc-node-sub">sent to supplier</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Purchase Order</div>
+  <div class="lc-tooltip-desc">
+    An official order sent to a supplier requesting goods. It defines quantities, 
+    pricing, and delivery terms and initiates the procurement process.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">if vendor</div></div>
+
+        <!-- VENDOR PO -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🏭</span>
+            <span class="lc-node-label">Vendor PO</span>
+            <span class="lc-node-sub">ParentID = PO</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Vendor PO</div>
+            <div class="lc-tooltip-desc">SubType = VendorPO<br>PartyType = Vendor<br>ParentTransactionID = PO#</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">shipped</div></div>
+
+        <!-- IN TRANSIT -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🚢</span>
+            <span class="lc-node-label">In Transit</span>
+            <span class="lc-node-sub">logistics tracking</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Shipment Tracking</div>
+            <div class="lc-tooltip-desc">Status = In Transit<br>ContainerNumber populated<br>BOLDate set</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">arrives</div></div>
+
+        <!-- AT PORT -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">⚓</span>
+            <span class="lc-node-label">At Port / Customs</span>
+            <span class="lc-node-sub">clearance</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">At Port</div>
+            <div class="lc-tooltip-desc">Status = At the Port<br>InventoryETADate set<br>FreightForwarder assigned</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">cleared</div></div>
+
+        <!-- SUPPLIER INVOICE -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📄</span>
+            <span class="lc-node-label">Supplier Invoice</span>
+            <span class="lc-node-sub">payable created</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Supplier Invoice</div>
+            <div class="lc-tooltip-desc">TransactionType = Payable<br>SubType = SupplierInvoice<br>Creates AP payable</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">received</div></div>
+
+        <!-- GOODS RECEIVED -->
+        <div class="lc-step">
+          <div class="lc-node" style="border-style:dashed;opacity:.85">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Goods Received</span>
+            <span class="lc-node-sub">→ enters Inventory</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Received</div>
+            <div class="lc-tooltip-desc">Status = Received<br>InventoryReceivedDate set<br>InventoryReceivedBy set</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Parallel freight track -->
+      <div class="lc-section-divider"><span>Parallel — Freight & Vendor Track</span></div>
+      <div class="lc-subflow">
+        <div class="lc-subflow-title">Freight & Vendor Management (runs alongside PO)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Freight PO created</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Freight Bill issued</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Freight Vendor assigned</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>FreightForwarder FK set on PO</div>
+        </div>
+      </div>
+
+      <div class="lc-status-row">
+        <span class="lc-status">Open PO</span>
+        <span class="lc-status">→ Unapproved</span>
+        <span class="lc-status">→ To Be Purchased</span>
+        <span class="lc-status">→ In Transit</span>
+        <span class="lc-status">→ At Port</span>
+        <span class="lc-status">→ On Road</span>
+        <span class="lc-status active">→ Received ✓</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ MODULE 03 · PRODUCTION ════ -->
+  <div class="lc-module lc-m-prod" id="lc-prod">
+    <div class="lc-mod-header" onclick="lcToggle('lc-prod')">
+      <span class="lc-mod-num">03</span>
+      <div class="lc-mod-icon">🏭</div>
+      <div>
+        <div class="lc-mod-title">Production</div>
+        <div class="lc-mod-subtitle">Manufacturing goods in-house before they enter inventory</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">TransactionType = Production</span>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <div class="lc-flow" id="lc-prod-flow">
+
+        <!-- PRODUCTION ORDER -->
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">📋</span>
+            <span class="lc-node-label">Production Order</span>
+            <span class="lc-node-sub">triggered by SO</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Production Order</div>
+  <div class="lc-tooltip-desc">
+    An internal instruction to manufacture goods. It breaks down work into tasks 
+    assigned to departments and tracks progress through production stages.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">assigned</div></div>
+
+        <!-- CUTTING -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">✂️</span>
+            <span class="lc-node-label">Cutting</span>
+            <span class="lc-node-sub">workstation</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Cutting</div>
+            <div class="lc-tooltip-desc">Production Ticket<br>Dept = Cutting<br>Status = Submitted → Produced</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div></div>
+
+        <!-- CNC -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">⚙️</span>
+            <span class="lc-node-label">CNC / Gang Saw</span>
+            <span class="lc-node-sub">machining</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">CNC / Gang Saw</div>
+            <div class="lc-tooltip-desc">Sub-stages: GS1, GS2<br>Saw Cutter / Splitter<br>Wizard</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div></div>
+
+        <!-- POLISHING -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">✨</span>
+            <span class="lc-node-label">Polishing / Tumbling</span>
+            <span class="lc-node-sub">finishing</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Finishing Stage</div>
+            <div class="lc-tooltip-desc">Polishing<br>Tumbling<br>Hand Tool</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div></div>
+
+        <!-- BAGGING -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📦</span>
+            <span class="lc-node-label">Bagging / Pack</span>
+            <span class="lc-node-sub">final packaging</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Bagging</div>
+            <div class="lc-tooltip-desc">Workstation = Bagging<br>Production Ticket = Produced</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">complete</div></div>
+
+        <!-- FINISHED GOODS -->
+        <div class="lc-step">
+          <div class="lc-node" style="border-style:dashed;opacity:.85">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Finished Goods</span>
+            <span class="lc-node-sub">→ enters Inventory</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Finished Goods</div>
+            <div class="lc-tooltip-desc">Status = Produced<br>InventoryReceivedDate set<br>Stock enters Inventory</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Workstation status sub-flow -->
+      <div class="lc-section-divider"><span>Ticket Status Buckets (per workstation)</span></div>
+      <div class="lc-subflow">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Pending Production Tickets</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Submitted Production Tickets</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Produced Production Tickets</div>
+        </div>
+      </div>
+
+      <div class="lc-status-row">
+        <span class="lc-status">Open Orders</span>
+        <span class="lc-status">→ Pending</span>
+        <span class="lc-status">→ Submitted</span>
+        <span class="lc-status active">→ Produced ✓</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ MODULE 04 · INVENTORY ════ -->
+  <div class="lc-module lc-m-inv" id="lc-inv">
+    <div class="lc-mod-header" onclick="lcToggle('lc-inv')">
+      <span class="lc-mod-num">04</span>
+      <div class="lc-mod-icon">🗃️</div>
+      <div>
+        <div class="lc-mod-title">Inventory</div>
+        <div class="lc-mod-subtitle">Physical movement, classification, and control of all stock</div>
+        <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Inventory</div>
+  <div class="lc-tooltip-desc">
+    The stage where goods are stored, tracked, and managed across locations. 
+    It includes transfers, adjustments, and classification before items are sold.
+  </div>
+</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">TransactionType = Inventory</span>
+        <span class="lc-tx-pill">TransactionType = Inventory Adjustment</span>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <!-- TRANSFERS flow -->
+      <div class="lc-section-divider"><span>Movement — Transfers</span></div>
+      <div class="lc-flow" id="lc-inv-flow">
+
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">📥</span>
+            <span class="lc-node-label">Stock Received</span>
+            <span class="lc-node-sub">from PO / Production</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Stock Received</div>
+            <div class="lc-tooltip-desc">InventoryReceivedDate set<br>LocationPartyID = warehouse</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">transfer order</div></div>
+
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🚚</span>
+            <span class="lc-node-label">Transfer Order</span>
+            <span class="lc-node-sub">To Be Transferred</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Transfer Order</div>
+            <div class="lc-tooltip-desc">SubType = Transfer<br>PartyType = Location<br>Status = To Be Transferred</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">in transit</div></div>
+
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📍</span>
+            <span class="lc-node-label">Location Change</span>
+            <span class="lc-node-sub">Milwaukee / Chicago…</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Locations</div>
+            <div class="lc-tooltip-desc">Milwaukee<br>DemoChicago<br>Indianapolis<br>Fab Demo<br>Consignment</div>
+          </div>
+        </div>
+
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">if needed</div></div>
+
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📊</span>
+            <span class="lc-node-label">Adjustment</span>
+            <span class="lc-node-sub">9 sub-types</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Inventory Adjustments</div>
+            <div class="lc-tooltip-desc">Adjust Qty · Bin Change<br>Revaluation · Merge · Split<br>Reclassify · Write Off<br>Physical Count · Showroom Count</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">ready</div></div>
+
+        <div class="lc-step">
+          <div class="lc-node" style="border-style:dashed;opacity:.85">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Available Stock</span>
+            <span class="lc-node-sub">→ ready for Sales</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Available Stock</div>
+            <div class="lc-tooltip-desc">Visible in Inventory by Location<br>Inventory by Type<br>Ready for Pick Ticket</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Classification -->
+      <div class="lc-section-divider"><span>Inventory by Type</span></div>
+      <div class="lc-subflow">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>SLAB</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Engineered Slab</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Accessory</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Sink</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Monument</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>More product types…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ MODULE 05 · SALES ════ -->
+  <div class="lc-module lc-m-sales" id="lc-sales">
+    <div class="lc-mod-header" onclick="lcToggle('lc-sales')">
+      <span class="lc-mod-num">05</span>
+      <div class="lc-mod-icon">🧾</div>
+      <div>
+        <div class="lc-mod-title">Sales</div>
+        <div class="lc-mod-subtitle">Confirmed sale through delivery, invoicing, and returns</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">TransactionType = Sale</span>
+        <span class="lc-tx-pill">PartyType = Customer</span>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <div class="lc-flow" id="lc-sales-flow">
+
+        <!-- SO -->
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">📃</span>
+            <span class="lc-node-label">Sale Order</span>
+            <span class="lc-node-sub">ParentID = Quote</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Sale Order</div>
+  <div class="lc-tooltip-desc">
+    A confirmed order from the customer. This triggers fulfillment processes 
+    like picking, packing, and delivery.
+  </div>
+</div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">warehouse</div></div>
+
+        <!-- PICK TICKET -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🏷️</span>
+            <span class="lc-node-label">Pick Ticket</span>
+            <span class="lc-node-sub">warehouse picks</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Pick Ticket</div>
+            <div class="lc-tooltip-desc">Triggers inventory reservation<br>Links to SO<br>FulfillmentPercent updated</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">packing</div></div>
+
+        <!-- PACKING LIST -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📦</span>
+            <span class="lc-node-label">Packing List</span>
+            <span class="lc-node-sub">PackingListDate set</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Packing List</div>
+            <div class="lc-tooltip-desc">PackingListDate populated<br>Weight field set<br>ShipmentMethod chosen</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">delivery</div></div>
+
+        <!-- DELIVERY -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">🚚</span>
+            <span class="lc-node-label">Delivery</span>
+            <span class="lc-node-sub">DeliveryType set</span>
+          </div>
+          <div class="lc-tooltip">
+            <div class="lc-tooltip-title">Delivery</div>
+            <div class="lc-tooltip-desc">DeliveryType: Pick-up / Delivery<br>Drop-ship / Install<br>ESTDeliveryDate set<br>ShippingTrackingNumber set</div>
+          </div>
+        </div>
+
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">fulfilled</div></div>
+
+        <!-- INVOICE -->
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">💰</span>
+            <span class="lc-node-label">Invoice</span>
+            <span class="lc-node-sub">ParentID = SO</span>
+          </div>
+          <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Invoice</div>
+  <div class="lc-tooltip-desc">
+    A financial document requesting payment from the customer. It records the 
+    final transaction value and updates receivables in accounting.
+  </div>
+</div>
+        </div>
+
+      </div>
+
+      <!-- Parallel: Exception + Return tracks -->
+      <div class="lc-section-divider"><span>Exceptions & Returns (parallel tracks)</span></div>
+      <div class="lc-subflow">
+        <div class="lc-subflow-title">Exception Handling</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>On Credit Hold</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Unapproved Change Order</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Approved Change Order</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Batch Job Close / Void</div>
+        </div>
+        <div class="lc-subflow-title">Returns Track</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Return Request</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Return Order</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Credit Memo</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Non-Product Credit Memo</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>All Returns / Credit Memos</div>
+        </div>
+      </div>
+
+      <!-- Proforma note -->
+      <div class="lc-subflow" style="margin-top:8px">
+        <div class="lc-subflow-title">Proforma Invoice (pre-shipment)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>SubType = Proforma Invoice</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>SpecialType = Proforma Invoice</div>
+          <span class="lc-substep-arrow">→</span>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Used for advance payment or customs</div>
+        </div>
+      </div>
+
+      <div class="lc-status-row">
+        <span class="lc-status">Open SO</span>
+        <span class="lc-status">→ Pick Ticket</span>
+        <span class="lc-status">→ Packed</span>
+        <span class="lc-status">→ Delivered</span>
+        <span class="lc-status active">→ Invoiced ✓</span>
+        <span class="lc-status">→ Return</span>
+        <span class="lc-status">→ Credit Memo</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ MODULE 06 · ACCOUNTING ════ -->
+  <div class="lc-module lc-m-acct" id="lc-acct">
+    <div class="lc-mod-header" onclick="lcToggle('lc-acct')">
+      <span class="lc-mod-num">06</span>
+      <div class="lc-mod-icon">📊</div>
+      <div>
+        <div class="lc-mod-title">Accounting</div>
+        <div class="lc-mod-subtitle">All money movement — receipts, payments, ledger entries</div>
+      </div>
+      <div class="lc-mod-tx">
+        <span class="lc-tx-pill">Accounting</span>
+        <span class="lc-tx-pill">Banking</span>
+        <span class="lc-tx-pill">Payable</span>
+        <span class="lc-tx-pill">Year End Closing</span>
+        <div class="lc-tooltip">
+  <div class="lc-tooltip-title">Accounting</div>
+  <div class="lc-tooltip-desc">
+    Final stage where all financial transactions are recorded, including payments, 
+    receipts, and ledger entries, ensuring accurate financial reporting.
+  </div>
+</div>
+      </div>
+      <span class="lc-chevron">▾</span>
+    </div>
+    <div class="lc-mod-body">
+
+      <!-- GL Flow -->
+      <div class="lc-section-divider"><span>Receivables — Money coming in (from Sales)</span></div>
+      <div class="lc-flow">
+        <div class="lc-step">
+          <div class="lc-node pulse">
+            <span class="lc-node-icon">🧾</span>
+            <span class="lc-node-label">Open Invoice</span>
+            <span class="lc-node-sub">Balance &gt; 0</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Open Invoice</div><div class="lc-tooltip-desc">Balance = unpaid amount<br>ForeignBalance if foreign currency</div></div>
+        </div>
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">customer pays</div></div>
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">💳</span>
+            <span class="lc-node-label">Receipt</span>
+            <span class="lc-node-sub">Banking · Receipt</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Receipt</div><div class="lc-tooltip-desc">TransactionType = Banking<br>SubType = Receipt<br>BankAccountID set<br>DepositNumber set</div></div>
+        </div>
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">recorded</div></div>
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📒</span>
+            <span class="lc-node-label">GL Journal Entry</span>
+            <span class="lc-node-sub">Debit / Credit</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">General Ledger</div><div class="lc-tooltip-desc">TransactionType = Accounting<br>SubType = Journal<br>SubType = MemorizedJournal</div></div>
+        </div>
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">reconciled</div></div>
+        <div class="lc-step">
+          <div class="lc-node" style="border-style:dashed;opacity:.85">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Bank Reconciled</span>
+            <span class="lc-node-sub">Balance = 0</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Bank Reconciliation</div><div class="lc-tooltip-desc">SubType = Bank Reconciliation<br>Balance = 0 on invoice<br>CloseDate set</div></div>
+        </div>
+      </div>
+
+      <!-- Payables Flow -->
+      <div class="lc-section-divider"><span>Payables — Money going out (from Purchases)</span></div>
+      <div class="lc-flow">
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📄</span>
+            <span class="lc-node-label">Supplier Invoice</span>
+            <span class="lc-node-sub">AP created</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Supplier Invoice</div><div class="lc-tooltip-desc">TransactionType = Payable<br>SubType = SupplierInvoice<br>Balance = amount owed</div></div>
+        </div>
+        <div class="lc-conn optional"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">if dispute</div></div>
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">📋</span>
+            <span class="lc-node-label">Bill / Credit Memo</span>
+            <span class="lc-node-sub">adjustment</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Bill / Credit Memo</div><div class="lc-tooltip-desc">SubType = Bill<br>SubType = Supplier Credit Memo<br>SubType = Credit Memo</div></div>
+        </div>
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">we pay</div></div>
+        <div class="lc-step">
+          <div class="lc-node">
+            <span class="lc-node-icon">💸</span>
+            <span class="lc-node-label">AP Payment</span>
+            <span class="lc-node-sub">Banking · Payment</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">AP Payment</div><div class="lc-tooltip-desc">TransactionType = Banking<br>SubType = Payment / APReceipt<br>WiringInstructionID set</div></div>
+        </div>
+        <div class="lc-conn"><div class="lc-conn-line"></div><div class="lc-conn-arrow"></div><div class="lc-conn-label">done</div></div>
+        <div class="lc-step">
+          <div class="lc-node" style="border-style:dashed;opacity:.85">
+            <span class="lc-node-icon">✅</span>
+            <span class="lc-node-label">Payable Cleared</span>
+            <span class="lc-node-sub">Balance = 0</span>
+          </div>
+          <div class="lc-tooltip"><div class="lc-tooltip-title">Cleared</div><div class="lc-tooltip-desc">Balance = 0 on Payable<br>GL entry recorded<br>Reconciled</div></div>
+        </div>
+      </div>
+
+      <!-- Special types -->
+      <div class="lc-subflow" style="margin-top:16px">
+        <div class="lc-subflow-title">Special Types &amp; Year End</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Debit Memo</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Deposit</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Reverse Entry</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Vendor AP</div>
+          <div class="lc-substep"><div class="lc-substep-dot"></div>Year End Closing</div>
+        </div>
+      </div>
+
+      <div class="lc-status-row">
+        <span class="lc-status">Open Invoice</span>
+        <span class="lc-status">→ Partially Paid</span>
+        <span class="lc-status active">→ Paid / Cleared ✓</span>
+        <span class="lc-status">→ GL Entry</span>
+        <span class="lc-status">→ Reconciled</span>
+        <span class="lc-status">→ Year End Close</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- LEGEND -->
+  <div class="lc-legend">
+    <div class="lc-legend-item">
+      <div class="lc-legend-line"></div>
+      Required / typical flow
+    </div>
+    <div class="lc-legend-item">
+      <div class="lc-legend-dashed"></div>
+      Optional / conditional step
+    </div>
+    <div class="lc-legend-item">
+      <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);border:1px dashed rgba(255,255,255,.4)"></div>
+      End state (triggers next module)
+    </div>
+    <div class="lc-legend-item">
+      <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.5)"></div>
+      Hover any node for TH field details
+    </div>
+  </div>
+
+</section>
+
+
+  <!-- ════════════════════════════════════
+       MODULE: PRESALES
+  ════════════════════════════════════ -->
+  <section class="content-section" id="presales">
+    <div class="section-eyebrow">Module 01</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Presales</div>
+      <div class="module-hero-desc">All activity that happens before an actual sale is committed. Tracks customer interest, manages quotations, holds inventory while the customer decides, and progresses opportunities through the sales pipeline.</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">TransactionType = PreSale</span>
+        <span class="module-tx-type">PartyType = Customer</span>
+      </div>
+    </div>
+
+    <div id="presales-opportunity"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;padding-top:8px;">Opportunity</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = NULL · Stage = Follow-up · The entry point of every customer journey.</p>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Screenshots pending</div>
+      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
+    </div></div>
+
+    <div class="divider"></div>
+
+    <div id="presales-quote"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Quote</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Quote · Stage = Quoted · Formal pricing document sent to customer.</p>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Screenshots pending</div>
+      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
+    </div></div>
+
+    <div class="divider"></div>
+
+    <div id="presales-hold"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Hold</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Hold · Stage = Hold · Inventory reserved while customer decides.</p>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Screenshots pending</div>
+      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
+    </div></div>
+
+    <div class="divider"></div>
+
+    <div id="presales-sample"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Sample Order</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = SampleOrder · Product samples sent for customer approval.</p>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Screenshots pending</div>
+      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
+    </div></div>
+
+    <div class="divider"></div>
+
+    <div id="presales-selection"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Selection Sheet</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = SelectionSheet · Product selection document for customer review.</p>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Screenshots pending</div>
+      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
+    </div></div>
+  </section>
+
+  <!-- MODULE: PURCHASES -->
+  <section class="content-section" id="purchases">
+    <div class="section-eyebrow">Module 02</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Purchases</div>
+      <div class="module-hero-desc">Transactions where the company is the buyer — ordering goods from suppliers or vendors. Covers the full purchase cycle from internal requisition through vendor purchase orders.</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">TransactionType = Purchase</span>
+        <span class="module-tx-type">PartyType = Supplier / Vendor</span>
+      </div>
+    </div>
+
+    <div id="purchases-po"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;padding-top:8px;">Purchase Order (PO)</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = PO · Formal order sent to supplier to procure goods.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="purchases-ppr"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Pre-Purchase Request</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Pre-Purchase Request · Internal requisition before a PO is formally issued.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="purchases-vendorpo"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Vendor PO</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = VendorPO · PO sent to a third-party vendor (non-supplier).</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+  </section>
+
+  <!-- MODULE: PRODUCTION -->
+  <section class="content-section" id="production">
+    <div class="section-eyebrow">Module 03</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Production</div>
+      <div class="module-hero-desc">Manufacturing and production-related transactions. Details to be documented based on system screenshots and workflow specifics.</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">TransactionType = TBD</span>
+      </div>
+    </div>
+    <div class="pending-section">
+      <div class="pending-icon">📸</div>
+      <div class="pending-title">Module documentation pending</div>
+      <div class="pending-note">Share screenshots and workflow details to populate this module</div>
+    </div>
+  </section>
+
+  <!-- MODULE: INVENTORY -->
+  <section class="content-section" id="inventory">
+    <div class="section-eyebrow">Module 04</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Inventory</div>
+      <div class="module-hero-desc">All transactions involving physical movement or adjustment of goods. Transfers move goods between locations; adjustments change quantities, values, or classifications within inventory.</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">TransactionType = Inventory</span>
+        <span class="module-tx-type active">TransactionType = Inventory Adjustment</span>
+        <span class="module-tx-type">PartyType = Location</span>
+      </div>
+    </div>
+
+    <div id="inventory-transfer"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;padding-top:8px;">Transfer</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Transfer · Moving goods from one company location to another.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="inventory-adjustments"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Inventory Adjustments</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">9 sub-types: Adjust Quantities, Bin Change, Change Sizes, Merge, Positive Adjustment, Reclassification, Revaluation, Split, Write Off.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+  </section>
+
+  <!-- MODULE: SALES -->
+  <section class="content-section" id="sales">
+    <div class="section-eyebrow">Module 05</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Sales</div>
+      <div class="module-hero-desc">Transactions representing the actual sale of goods to customers. From the confirmed Sale Order through invoicing, proforma invoices, and handling returns.</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">TransactionType = Sale</span>
+        <span class="module-tx-type">PartyType = Customer</span>
+      </div>
+    </div>
+
+    <div id="sales-so"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;padding-top:8px;">Sale Order</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = SaleOrder · The confirmed order. Parent = Quote TN. Triggers warehouse pick/pack workflow.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="sales-invoice"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Invoice</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Invoice · Billing document sent to customer. Parent = SO TN. InvoiceNumber = TransactionNumber.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="sales-proforma"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Proforma Invoice</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Proforma Invoice · SpecialType = Proforma Invoice · Pre-shipment invoice for advance payment or customs.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="sales-return"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Return Order</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Return Order · SpecialType = Customer Credit Memo · Links to original Invoice via InvoiceNumber.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+  </section>
+
+  <!-- MODULE: ACCOUNTING -->
+  <section class="content-section" id="accounting">
+    <div class="section-eyebrow">Module 06</div>
+    <div class="module-hero">
+      <div class="module-hero-title">Accounting</div>
+      <div class="module-hero-desc">Financial recording and money movement. Comprises four sub-modules: General Ledger (journal entries), Banking (actual money flow), Payables (amounts owed to suppliers), and Receivables (amounts owed by customers).</div>
+      <div class="module-tx-types">
+        <span class="module-tx-type active">Accounting</span>
+        <span class="module-tx-type active">Banking</span>
+        <span class="module-tx-type active">Payable</span>
+        <span class="module-tx-type active">Year End Closing</span>
+      </div>
+    </div>
+
+    <div id="acct-gl" style="padding-top:8px;"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">General Ledger</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">TransactionType = Accounting · SubTypes: Journal, MemorizedJournal · Financial recording of all transactions.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="acct-banking"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Banking</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">TransactionType = Banking · SubTypes: APReceipt, Bank Reconciliation, Payment, Receipt · Actual money flow in and out of company bank accounts.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="acct-payables"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Payables</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">TransactionType = Payable · SubTypes: Bill, Credit Memo, Supplier Credit Memo, SupplierInvoice · Money the company owes to suppliers.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+
+    <div class="divider"></div>
+
+    <div id="acct-receivables"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Receivables</h3>
+    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">Money owed to the company by customers. Linked via InvoiceNumber and CustomerReference to open invoices and receipts.</p>
+    <div class="pending-section"><div class="pending-icon">📸</div><div class="pending-title">Screenshots pending</div><div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div></div></div>
+  </section>
+
+</main>
+
+<script>
+// ── POPULATION MATRIX DATA ──
+const R = 'req', O = 'opt', N = 'na';
+const matrixData = [
+  // [column, presale, purchase, sale, inventory, payable, banking, accounting]
+  ['ID', R, R, R, R, R, R, R],
+  ['TransactionNumber', R, R, R, R, R, R, R],
+  ['TransactionType', R, R, R, R, R, R, R],
+  ['TransactionSubType', O, R, R, R, R, R, O],
+  ['SpecialType', O, O, O, O, O, O, O],
+  ['TransactionDate', R, R, R, R, R, R, R],
+  ['TransactionStatus', R, O, R, R, O, O, N],
+  ['TransactionStage', R, N, O, N, N, N, N],
+  ['PartyType', R, R, R, R, R, O, O],
+  ['AccountingPartyID', R, N, R, N, R, O, N],
+  ['ShipToPartyID', O, O, R, O, N, N, N],
+  ['ParentTransactionID', O, O, O, N, O, N, N],
+  ['SourceTransactionID', O, O, O, N, O, N, N],
+  ['SalePersonID', R, N, R, N, N, N, N],
+  ['ProjectManagerID', O, N, O, N, N, N, N],
+  ['Total', R, R, R, N, R, R, N],
+  ['Balance', O, N, R, N, R, N, N],
+  ['CurrencyID', O, O, O, N, O, O, N],
+  ['PaymentTerms', O, O, R, N, R, N, N],
+  ['DeliveryType', R, N, R, N, N, N, N],
+  ['ESTDeliveryDate', O, N, R, N, N, N, N],
+  ['InternalNotes', O, O, O, O, O, O, O],
+  ['JobName', O, N, O, N, N, N, N],
+  ['AuthorizationNumber', N, N, N, R, N, R, N],
+  ['InvoiceNumber', N, N, R, N, R, R, O],
+];
+
+function renderDot(val) {
+  if (val === 'req') return '<span class="dot-filled dot-req" title="Required"></span>';
+  if (val === 'opt') return '<span class="dot-filled dot-opt" title="Optional/Conditional"></span>';
+  return '<span class="dot-na" title="Not applicable">–</span>';
+}
+
+const tbody = document.getElementById('matrixBody');
+matrixData.forEach(([col, ...vals]) => {
+  const tr = document.createElement('tr');
+  const td0 = document.createElement('td');
+  td0.textContent = col;
+  tr.appendChild(td0);
+  vals.forEach(v => {
+    const td = document.createElement('td');
+    td.innerHTML = renderDot(v);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+
+// ── ACTIVE NAV HIGHLIGHT ON SCROLL ──
+const sections = document.querySelectorAll('[id]');
+const navItems = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// ── COLUMN SEARCH ──
+const searchInput = document.getElementById('colSearch');
+searchInput.addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.col-card');
+  cards.forEach(card => {
+    const col = card.getAttribute('data-col') || '';
+    const text = card.textContent.toLowerCase();
+    if (!q || col.toLowerCase().includes(q) || text.includes(q)) {
+      card.style.display = '';
+      card.classList.toggle('highlighted', q && col.toLowerCase().includes(q));
+    } else {
+      card.style.display = 'none';
+    }
+  });
+});
+</script>
+
+</body>
+</html>
