@@ -14,9 +14,7 @@
 <!-- SIDEBAR -->
 <nav id="sidebar">
   <div class="sidebar-header">
-    <div class="sidebar-logo">Table Reference</div>
-    <div class="sidebar-title">Transaction<br>Header</div>
-    <div class="sidebar-subtitle">v1.0 · 120+ columns</div>
+    <div class="sidebar-title">TransactionHeader<br>Table</div>
   </div>
 
   <div class="search-wrap">
@@ -48,17 +46,17 @@
 
     <a class="nav-item" href="#presales">
       <span class="nav-dot"></span> Presales
-      <span class="nav-badge">5</span>
     </a>
     <a class="nav-item sub" href="#presales-opportunity">Opportunity</a>
+    <a class="nav-item sub" href="#presales-selection">Selection Sheet</a>
+    <a class="nav-item sub" href="#presales-sample">Sample Order</a>
     <a class="nav-item sub" href="#presales-quote">Quote</a>
     <a class="nav-item sub" href="#presales-hold">Hold</a>
-    <a class="nav-item sub" href="#presales-sample">Sample Order</a>
-    <a class="nav-item sub" href="#presales-selection">Selection Sheet</a>
+    
+    
 
     <a class="nav-item" href="#purchases">
       <span class="nav-dot"></span> Purchases
-      <span class="nav-badge">3</span>
     </a>
     <a class="nav-item sub" href="#purchases-po">Purchase Order</a>
     <a class="nav-item sub" href="#purchases-ppr">Pre-Purchase Request</a>
@@ -70,14 +68,12 @@
 
     <a class="nav-item" href="#inventory">
       <span class="nav-dot"></span> Inventory
-      <span class="nav-badge">9</span>
     </a>
     <a class="nav-item sub" href="#inventory-transfer">Transfer</a>
     <a class="nav-item sub" href="#inventory-adjustments">Adjustments</a>
 
     <a class="nav-item" href="#sales">
       <span class="nav-dot"></span> Sales
-      <span class="nav-badge">4</span>
     </a>
     <a class="nav-item sub" href="#sales-so">Sale Order</a>
     <a class="nav-item sub" href="#sales-invoice">Invoice</a>
@@ -1538,53 +1534,1438 @@
       </div>
     </div>
 
-    <div id="presales-opportunity"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;padding-top:8px;">Opportunity</h3>
-    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = NULL · Stage = Follow-up · The entry point of every customer journey.</p>
-    <div class="pending-section">
-      <div class="pending-icon">📸</div>
-      <div class="pending-title">Screenshots pending</div>
-      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
-    </div></div>
+    <!-- ════════════════════════════════════════════════════════════
+     PRESALES · OPPORTUNITY
+     Replace the existing <div id="presales-opportunity">…</div>
+     block with this entire block.
+════════════════════════════════════════════════════════════ -->
+<div id="presales-opportunity">
+
+  <!-- ── STEP HEADER ── -->
+  <div class="step-header">
+    <div class="step-badge presale">PreSale · SubType = NULL</div>
+    <h3 class="step-title">Opportunity</h3>
+    <p class="step-intro">
+      An Opportunity is the <strong>origin record</strong> of every customer journey in the system.
+      It is created the moment a potential customer makes contact — a walk-in, a phone call, an email inquiry —
+      and a salesperson decides the lead is worth tracking. No products are confirmed, no prices locked.
+      This record simply says: <em>"a customer exists, they have a need, we are following up."</em>
+    </p>
+    <div class="step-meta-pills">
+      <span class="smp smp-type">TransactionType = <strong>PreSale</strong></span>
+      <span class="smp smp-sub">TransactionSubType = <strong>NULL</strong></span>
+      <span class="smp smp-stage">Stage = <strong>Quote</strong> (set at creation)</span>
+      <span class="smp smp-party">PartyType = <strong>Customer</strong></span>
+    </div>
+  </div>
+
+  <!-- ── WHAT HAPPENS WHEN YOU CLICK "ADD NEW OPPORTUNITY" ── -->
+  <div class="step-section-label">What happens when you save</div>
+  <div class="step-flow-visual">
+    <div class="sfv-step active">
+      <div class="sfv-icon">📋</div>
+      <div class="sfv-label">Fill form</div>
+      <div class="sfv-sub">Bill To · Ship To · Associates</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">💾</div>
+      <div class="sfv-label">Save</div>
+      <div class="sfv-sub">Click "Add New Opportunity"</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🆕</div>
+      <div class="sfv-label">TH Row Created</div>
+      <div class="sfv-sub">ID = 2519859 assigned</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🔢</div>
+      <div class="sfv-label">TN Assigned</div>
+      <div class="sfv-sub">TransactionNumber = 652118</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">⏳</div>
+      <div class="sfv-label">Awaiting Action</div>
+      <div class="sfv-sub">Quote · Visit · Hold…</div>
+    </div>
+  </div>
+
+  <!-- ── FORM ↔ TH MAPPING ── -->
+  <div class="step-section-label">Form fields → TransactionHeader columns</div>
+  <p class="step-section-desc">
+    Each panel in the form maps to a group of columns in TransactionHeader.
+    The diagram below shows exactly what you typed and where it landed.
+  </p>
+
+  <div class="form-th-map">
+
+    <!-- PANEL: TOP BAR -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🔖</span>
+        <span class="fthm-panel-title">Header bar (Date · Location · Stage · Contact Mode)</span>
+      </div>
+      <table class="fthm-table">
+        <thead><tr><th>Form Field</th><th>Value Entered</th><th>TH Column</th><th>Stored As</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Date</td>
+            <td class="val">04/22/2026</td>
+            <td class="col">TransactionDate</td>
+            <td class="stored">04/22/2026</td>
+            <td>Business date of the opportunity</td>
+          </tr>
+          <tr>
+            <td>Location</td>
+            <td class="val">Seattle</td>
+            <td class="col">LocationPartyID + LocationPartyIDName</td>
+            <td class="stored">1 · "Seattle"</td>
+            <td>ID stored; name denormalized for display</td>
+          </tr>
+          <tr>
+            <td>Division</td>
+            <td class="val">3 - Display Material</td>
+            <td class="col">DivisionID</td>
+            <td class="stored">83</td>
+            <td>Stored as ID; display name resolved separately</td>
+          </tr>
+          <tr>
+            <td>Stage</td>
+            <td class="val">Quote</td>
+            <td class="col">TransactionStage</td>
+            <td class="stored">"Quote"</td>
+            <td>Stage is set to "Quote" even on a new opportunity when opened via the Quotes tab flow</td>
+          </tr>
+          <tr>
+            <td>Contact Mode</td>
+            <td class="val">Phone (icon selected)</td>
+            <td class="col">ContactMode</td>
+            <td class="stored">"PhoneCall"</td>
+            <td>How the customer contacted the company</td>
+          </tr>
+          <tr>
+            <td>Probability to Close</td>
+            <td class="val">50%</td>
+            <td class="col">MarketingChannel (mapped)</td>
+            <td class="stored">2057</td>
+            <td>Stored as ID reference in MarketingChannel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PANEL: BILL TO -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🧾</span>
+        <span class="fthm-panel-title">Bill To — Accounting / Billing party</span>
+      </div>
+      <table class="fthm-table">
+        <thead><tr><th>Form Field</th><th>Value Entered</th><th>TH Column</th><th>Stored As</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Billing Customer</td>
+            <td class="val">1 Build International</td>
+            <td class="col">AccountingPartyID + AccountingPartyName</td>
+            <td class="stored">19981 · "1 Build International - (326596)"</td>
+            <td>ID is FK to party table; name is denormalized snapshot</td>
+          </tr>
+          <tr>
+            <td>Attn</td>
+            <td class="val">Billing Initial Test</td>
+            <td class="col">AccountingAttn</td>
+            <td class="stored">"Billing Initial Test"</td>
+            <td>Contact person at billing company</td>
+          </tr>
+          <tr>
+            <td>Address</td>
+            <td class="val">11601 Biscayne Blvd</td>
+            <td class="col">AccountingAddress</td>
+            <td class="stored">"11601 Biscayne Blvd"</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Suite / Unit#</td>
+            <td class="val">Suite 203</td>
+            <td class="col">AccountingAddress2</td>
+            <td class="stored">"Suite 203"</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>City / State / Zip</td>
+            <td class="val">Miami · FL · 33181</td>
+            <td class="col">AccountingCity + AccountingState + AccountingZip</td>
+            <td class="stored">"Miami" · "FL" · "33181"</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Country</td>
+            <td class="val">United States</td>
+            <td class="col">AccountingCountry</td>
+            <td class="stored">1029</td>
+            <td>Stored as country ID, not string</td>
+          </tr>
+          <tr>
+            <td>Phone / Fax / Mobile</td>
+            <td class="val">786-618-1816 · 124-5789 · 305-890-3129</td>
+            <td class="col">AccountingPhone1 + AccountingFax + AccountingMobile</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Email</td>
+            <td class="val">gavinp@1buildinternational.com</td>
+            <td class="col">AccountingEmail</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Price Level</td>
+            <td class="val">CM2 – CM Price2</td>
+            <td class="col">TPriceLevel</td>
+            <td class="stored">"Price65"</td>
+            <td>Internal pricing tier code for this customer</td>
+          </tr>
+          <tr>
+            <td>Primary Sales Person</td>
+            <td class="val">CM-Ft Lauderdale House</td>
+            <td class="col">SalePersonID + SalePersonIDName</td>
+            <td class="stored">9086 · "CM-Ft Lauderdale House"</td>
+            <td>SP1: customer-facing relationship owner</td>
+          </tr>
+          <tr>
+            <td>Secondary Sales Person</td>
+            <td class="val">--Select-- (none)</td>
+            <td class="col">SalesPerson2ID</td>
+            <td class="stored">0</td>
+            <td>0 = not assigned</td>
+          </tr>
+          <tr>
+            <td>Total Value $</td>
+            <td class="val">2,507.00</td>
+            <td class="col">Total</td>
+            <td class="stored">2507</td>
+            <td>Estimated deal value at opportunity stage</td>
+          </tr>
+          <tr>
+            <td>Sales Tax</td>
+            <td class="val">AVA Avalara 0%</td>
+            <td class="col">TaxItemID</td>
+            <td class="stored">1</td>
+            <td>FK to tax item; Avalara integration handles calculation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PANEL: SHIP TO -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🚚</span>
+        <span class="fthm-panel-title">Ship To — Delivery destination</span>
+      </div>
+      <table class="fthm-table">
+        <thead><tr><th>Form Field</th><th>Value Entered</th><th>TH Column</th><th>Stored As</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Delivery Type</td>
+            <td class="val">Delivery (button selected)</td>
+            <td class="col">DeliveryType</td>
+            <td class="stored">"Delivery"</td>
+            <td>Pick Up / Delivery / Dropship / Other</td>
+          </tr>
+          <tr>
+            <td>End Customer / Job Name</td>
+            <td class="val">1 Build International</td>
+            <td class="col">JobName</td>
+            <td class="stored">"1 Build International"</td>
+            <td>Project name — identifies the scope of work</td>
+          </tr>
+          <tr>
+            <td>Ship To (party lookup)</td>
+            <td class="val">1 Build International</td>
+            <td class="col">ShipToPartyID + ShipToContactID</td>
+            <td class="stored">19981 · 19981</td>
+            <td>Same as billing party in this case</td>
+          </tr>
+          <tr>
+            <td>ShipTo Name</td>
+            <td class="val">1 Robert Grooms</td>
+            <td class="col">ShipToName</td>
+            <td class="stored">"1 Robert Grooms"</td>
+            <td>Can differ from billing company name</td>
+          </tr>
+          <tr>
+            <td>Attn</td>
+            <td class="val">Billing Initial Test</td>
+            <td class="col">ShipToAttn</td>
+            <td class="stored">"Billing Initial Test"</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Address / Suite</td>
+            <td class="val">11601 Biscayne Blvd · Suite 203</td>
+            <td class="col">ShipToAddress + ShipToAddress2</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>City / State / Zip</td>
+            <td class="val">Miami · FL · 33181</td>
+            <td class="col">ShipToCity + ShipToState + ShipToZip</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>County</td>
+            <td class="val">London</td>
+            <td class="col">ShipToCounty</td>
+            <td class="stored">"London"</td>
+            <td>County/district level field — sub-state region</td>
+          </tr>
+          <tr>
+            <td>Country</td>
+            <td class="val">United States</td>
+            <td class="col">ShipToCountry</td>
+            <td class="stored">1029</td>
+            <td>Stored as ID</td>
+          </tr>
+          <tr>
+            <td>Phone / Fax / Mobile</td>
+            <td class="val">786-618-1816 · 124-5789 · 305-890-3129</td>
+            <td class="col">ShipToPhone1 + ShipToFax + ShipToPhone2</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Email</td>
+            <td class="val">gavinp@1buildinternational.com</td>
+            <td class="col">ShipToEmail</td>
+            <td class="stored">as entered</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>How did you hear about us?</td>
+            <td class="val">Local Advertising</td>
+            <td class="col">MarketingChannel</td>
+            <td class="stored">2057</td>
+            <td>Stored as ID from SystemOptions table</td>
+          </tr>
+          <tr>
+            <td>Do not send email updates</td>
+            <td class="val">Unchecked</td>
+            <td class="col">NoEmailUpdate</td>
+            <td class="stored">NULL / 0</td>
+            <td>Flag for opting out of email notifications</td>
+          </tr>
+          <tr>
+            <td>Special / Delivery Instructions</td>
+            <td class="val">***DELIVERY ADDRESS WILL VARY***</td>
+            <td class="col">SpecialInstructions</td>
+            <td class="stored">as entered</td>
+            <td>Printed on fulfillment documents</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PANEL: ASSOCIATES -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🤝</span>
+        <span class="fthm-panel-title">Associates — Influencer network</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-sec);margin-bottom:12px;">
+        These are the people or companies who influenced this customer to reach out or are involved in the project.
+        Stored as Party IDs — each maps to a named slot in TransactionHeader.
+      </p>
+      <table class="fthm-table">
+        <thead><tr><th>Form Label</th><th>Value Entered</th><th>TH Column (ID)</th><th>TH Column (Name)</th><th>Stored ID</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Architect</td>
+            <td class="val">180 Kitchen & Bath Design Group LLC</td>
+            <td class="col">Party1ID</td>
+            <td class="col">Party1Name</td>
+            <td class="stored">34962</td>
+          </tr>
+          <tr>
+            <td>Designer</td>
+            <td class="val">1551 Design | Artistic Elements</td>
+            <td class="col">Party2ID</td>
+            <td class="col">Party2Name</td>
+            <td class="stored">36758</td>
+          </tr>
+          <tr>
+            <td>General Contractor</td>
+            <td class="val">1716 Seventh LLC</td>
+            <td class="col">Party3ID</td>
+            <td class="col">Party3Name</td>
+            <td class="stored">32983</td>
+          </tr>
+          <tr>
+            <td>Builder</td>
+            <td class="val">1Architecture</td>
+            <td class="col">Party4ID</td>
+            <td class="col">Party4Name</td>
+            <td class="stored">34460</td>
+          </tr>
+          <tr>
+            <td>K and B (Brand)</td>
+            <td class="val">1st Choice Builders</td>
+            <td class="col">Party5ID</td>
+            <td class="col">Party5Name</td>
+            <td class="stored">30925</td>
+          </tr>
+          <tr>
+            <td>Referred By</td>
+            <td class="val">101 Countertops</td>
+            <td class="col">ReferredByID</td>
+            <td class="col">Party6Name</td>
+            <td class="stored">17423</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PANEL: NOTES -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">📝</span>
+        <span class="fthm-panel-title">Notes</span>
+      </div>
+      <table class="fthm-table">
+        <thead><tr><th>Form Field</th><th>Value Entered</th><th>TH Column</th><th>Visible To</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Internal Notes</td>
+            <td class="val">Internal Notes</td>
+            <td class="col">InternalNotes</td>
+            <td>Company staff only — not printed</td>
+          </tr>
+          <tr>
+            <td>Printed Notes</td>
+            <td class="val">Printed Notes</td>
+            <td class="col">PrintedNotes</td>
+            <td>Both customer and company — appears on documents</td>
+          </tr>
+          <tr>
+            <td>Special / Delivery Instructions</td>
+            <td class="val">***DELIVERY ADDRESS WILL VARY***</td>
+            <td class="col">SpecialInstructions</td>
+            <td>Warehouse / logistics team</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /form-th-map -->
+
+  <!-- ── SYSTEM-SET COLUMNS ── -->
+  <div class="step-section-label">System-generated columns (not from form)</div>
+  <p class="step-section-desc">These columns are auto-populated by the system on save — the user never fills them in.</p>
+
+  <div class="auto-cols-grid">
+    <div class="auto-col-card">
+      <div class="auto-col-name">ID</div>
+      <div class="auto-col-val">2519859</div>
+      <div class="auto-col-desc">Backend PK, auto-incremented. Used in URL.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">TransactionNumber</div>
+      <div class="auto-col-val">652118</div>
+      <div class="auto-col-desc">Frontend reference number. Used in all printed docs.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">TransactionType</div>
+      <div class="auto-col-val">PreSale</div>
+      <div class="auto-col-desc">Set by the module — always "PreSale" for all presale steps.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">TransactionCode</div>
+      <div class="auto-col-val">21</div>
+      <div class="auto-col-desc">Internal code identifying Opportunity type.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">CreatedOn</div>
+      <div class="auto-col-val">04/22/2026</div>
+      <div class="auto-col-desc">System timestamp of row creation.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">CreatedBy + CreatedByName</div>
+      <div class="auto-col-val">101 · "administrator"</div>
+      <div class="auto-col-desc">Logged-in user who saved the form.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">TransactionTime</div>
+      <div class="auto-col-val">8:11 PM</div>
+      <div class="auto-col-desc">Exact time of save.</div>
+    </div>
+    <div class="auto-col-card">
+      <div class="auto-col-name">PaymentTerms</div>
+      <div class="auto-col-val">46</div>
+      <div class="auto-col-desc">Default payment terms pulled from customer's profile.</div>
+    </div>
+  </div>
+
+  <!-- ── NULL / ZERO AT OPPORTUNITY STAGE ── -->
+  <div class="step-section-label">Columns that are NULL or 0 at Opportunity stage</div>
+  <p class="step-section-desc">
+    These columns exist in TransactionHeader but have no data yet — they will be populated in later steps.
+    Understanding what's empty now helps explain what each future step adds.
+  </p>
+  <div class="null-cols-row">
+    <div class="null-group">
+      <div class="null-group-label">Lineage (populated when child transactions are created)</div>
+      <div class="null-pills">
+        <span class="null-pill">ParentTransactionID = 0</span>
+        <span class="null-pill">SourceTransactionID = 0</span>
+        <span class="null-pill">ParentTransactionNumber = —</span>
+        <span class="null-pill">SourceTransactionNumber = —</span>
+        <span class="null-pill">TransactionSubID = —</span>
+      </div>
+    </div>
+    <div class="null-group">
+      <div class="null-group-label">Classification (set when SubType is created)</div>
+      <div class="null-pills">
+        <span class="null-pill">TransactionSubType = NULL</span>
+        <span class="null-pill">SpecialType = NULL</span>
+        <span class="null-pill">TransactionStatus = —</span>
+      </div>
+    </div>
+    <div class="null-group">
+      <div class="null-group-label">Financial (populated at Quote / Invoice stage)</div>
+      <div class="null-pills">
+        <span class="null-pill">Balance = 0</span>
+        <span class="null-pill">ForeignTotal = 0</span>
+        <span class="null-pill">ForeignBalance = 0</span>
+        <span class="null-pill">CurrencyID = 0</span>
+        <span class="null-pill">ConversionRate = 0</span>
+      </div>
+    </div>
+    <div class="null-group">
+      <div class="null-group-label">Fulfillment (populated at SO / Invoice / Delivery)</div>
+      <div class="null-pills">
+        <span class="null-pill">ESTDeliveryDate = —</span>
+        <span class="null-pill">RequestedShipDate = —</span>
+        <span class="null-pill">ShippingTrackingNumber = —</span>
+        <span class="null-pill">FulfillmentPercent = —</span>
+        <span class="null-pill">PackingListDate = —</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TH ROW SNAPSHOT ── -->
+  <div class="step-section-label">TransactionHeader row snapshot (ID 2519859)</div>
+  <p class="step-section-desc">
+    This is the actual state of the TransactionHeader row after saving this opportunity.
+    Only non-null / non-zero populated columns are shown.
+  </p>
+  <div class="th-snapshot">
+    <div class="ths-group">
+      <div class="ths-group-label">🔑 Identity</div>
+      <div class="ths-row"><span class="ths-col">ID</span><span class="ths-val">2519859</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionNumber</span><span class="ths-val">652118</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionCode</span><span class="ths-val">21</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionDate</span><span class="ths-val">04/22/2026</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionTime</span><span class="ths-val">8:11 PM</span></div>
+      <div class="ths-row"><span class="ths-col">CreatedOn</span><span class="ths-val">04/22/2026</span></div>
+      <div class="ths-row"><span class="ths-col">CreatedBy</span><span class="ths-val">101 (administrator)</span></div>
+    </div>
+    <div class="ths-group">
+      <div class="ths-group-label">🏷️ Classification</div>
+      <div class="ths-row"><span class="ths-col">TransactionType</span><span class="ths-val amber">PreSale</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionSubType</span><span class="ths-val null">NULL</span></div>
+      <div class="ths-row"><span class="ths-col">SpecialType</span><span class="ths-val null">NULL</span></div>
+      <div class="ths-row"><span class="ths-col">PartyType</span><span class="ths-val">Customer</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionStage</span><span class="ths-val">Quote</span></div>
+      <div class="ths-row"><span class="ths-col">LocationPartyID</span><span class="ths-val">1 (Seattle)</span></div>
+      <div class="ths-row"><span class="ths-col">DivisionID</span><span class="ths-val">83</span></div>
+    </div>
+    <div class="ths-group">
+      <div class="ths-group-label">👥 People</div>
+      <div class="ths-row"><span class="ths-col">AccountingPartyID</span><span class="ths-val">19981</span></div>
+      <div class="ths-row"><span class="ths-col">AccountingPartyName</span><span class="ths-val">1 Build International - (326596)</span></div>
+      <div class="ths-row"><span class="ths-col">SalePersonID</span><span class="ths-val">9086</span></div>
+      <div class="ths-row"><span class="ths-col">SalePersonIDName</span><span class="ths-val">CM-Ft Lauderdale House</span></div>
+      <div class="ths-row"><span class="ths-col">Party1ID → Party5ID</span><span class="ths-val">34962 · 36758 · 32983 · 34460 · 30925</span></div>
+      <div class="ths-row"><span class="ths-col">ReferredByID</span><span class="ths-val">17423</span></div>
+    </div>
+    <div class="ths-group">
+      <div class="ths-group-label">💰 Financial</div>
+      <div class="ths-row"><span class="ths-col">Total</span><span class="ths-val">2,507.00</span></div>
+      <div class="ths-row"><span class="ths-col">Balance</span><span class="ths-val null">0</span></div>
+      <div class="ths-row"><span class="ths-col">PaymentTerms</span><span class="ths-val">46</span></div>
+      <div class="ths-row"><span class="ths-col">TaxItemID</span><span class="ths-val">1 (AVA Avalara 0%)</span></div>
+      <div class="ths-row"><span class="ths-col">TPriceLevel</span><span class="ths-val">Price65</span></div>
+    </div>
+    <div class="ths-group">
+      <div class="ths-group-label">🔗 Lineage (origin record)</div>
+      <div class="ths-row"><span class="ths-col">ParentTransactionID</span><span class="ths-val null">0 — this IS the origin</span></div>
+      <div class="ths-row"><span class="ths-col">SourceTransactionID</span><span class="ths-val null">0 — this IS the origin</span></div>
+      <div class="ths-row"><span class="ths-col">TransactionSubType</span><span class="ths-val null">NULL — no sub-document yet</span></div>
+    </div>
+    <div class="ths-group">
+      <div class="ths-group-label">📌 Context</div>
+      <div class="ths-row"><span class="ths-col">ContactMode</span><span class="ths-val">PhoneCall</span></div>
+      <div class="ths-row"><span class="ths-col">MarketingChannel</span><span class="ths-val">2057 (Local Advertising)</span></div>
+      <div class="ths-row"><span class="ths-col">JobName</span><span class="ths-val">1 Build International</span></div>
+      <div class="ths-row"><span class="ths-col">SpecialInstructions</span><span class="ths-val">***DELIVERY ADDRESS WILL VARY***</span></div>
+    </div>
+  </div>
+
+  <!-- ── LINEAGE & CONNECTIONS ── -->
+  <div class="step-section-label">Transaction lineage — how this record connects forward</div>
+  <p class="step-section-desc">
+    The Opportunity is the <strong>root node</strong>. All future transactions created from this opportunity
+    will point back to it. Here is how the chain builds as the deal progresses.
+  </p>
+
+  <div class="lineage-diagram">
+    <div class="ld-node origin">
+      <div class="ld-node-badge">ORIGIN</div>
+      <div class="ld-node-title">Opportunity</div>
+      <div class="ld-node-tn">TN: 652118</div>
+      <div class="ld-node-id">ID: 2519859</div>
+      <div class="ld-node-meta">ParentID = 0<br>SourceID = 0</div>
+    </div>
+
+    <div class="ld-branch-wrap">
+      <div class="ld-branch-line"></div>
+      <div class="ld-branch-children">
+
+        <div class="ld-child-wrap">
+          <div class="ld-connector"></div>
+          <div class="ld-node child quote">
+            <div class="ld-node-badge">NEXT STEP</div>
+            <div class="ld-node-title">Quote</div>
+            <div class="ld-node-tn">New TN assigned</div>
+            <div class="ld-node-meta">ParentTransactionID = <span class="ld-highlight">652118</span><br>SourceTransactionID = <span class="ld-highlight">652118</span><br>SubType = Quote</div>
+          </div>
+        </div>
+
+        <div class="ld-child-wrap">
+          <div class="ld-connector optional"></div>
+          <div class="ld-node child hold">
+            <div class="ld-node-badge opt-badge">OPTIONAL</div>
+            <div class="ld-node-title">Hold</div>
+            <div class="ld-node-tn">New TN assigned</div>
+            <div class="ld-node-meta">ParentTransactionID = <span class="ld-highlight">652118</span><br>SubType = Hold</div>
+          </div>
+        </div>
+
+        <div class="ld-child-wrap">
+          <div class="ld-connector optional"></div>
+          <div class="ld-node child sample">
+            <div class="ld-node-badge opt-badge">OPTIONAL</div>
+            <div class="ld-node-title">Sample Order</div>
+            <div class="ld-node-tn">New TN assigned</div>
+            <div class="ld-node-meta">ParentTransactionID = <span class="ld-highlight">652118</span><br>SubType = SampleOrder</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ld-downstream">
+      <div class="ld-ds-label">→ Once a Quote is Accepted, the chain continues:</div>
+      <div class="ld-ds-chain">
+        <span class="ld-ds-node">Quote (TN: XXXXXX)</span>
+        <span class="ld-ds-arrow">→</span>
+        <span class="ld-ds-node">Sale Order<br><small>Parent = Quote TN</small></span>
+        <span class="ld-ds-arrow">→</span>
+        <span class="ld-ds-node">Invoice<br><small>Parent = SO TN</small></span>
+        <span class="ld-ds-arrow">→</span>
+        <span class="ld-ds-node">Receipt (Banking)<br><small>Ref = Invoice TN</small></span>
+      </div>
+      <div class="ld-ds-note">
+        ⓘ <strong>SourceTransactionID</strong> stays = 652118 all the way through the SO and Invoice —
+        it always points back to this root Opportunity.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KEY TAKEAWAYS ── -->
+  <div class="step-section-label">Key takeaways for this step</div>
+  <div class="takeaways-grid">
+    <div class="takeaway-card">
+      <div class="tc-icon">🔑</div>
+      <div class="tc-title">Two IDs, two purposes</div>
+      <div class="tc-body"><strong>ID</strong> is the backend primary key (used in URLs, joins). <strong>TransactionNumber</strong> (652118) is the human-facing reference used in all documents, searches, and linking.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="tc-icon">📸</div>
+      <div class="tc-title">Address data is a snapshot</div>
+      <div class="tc-body">Billing and shipping addresses are copied into TransactionHeader at save time. If the customer's address changes later, this transaction retains the address as it was when the opportunity was created.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="tc-icon">🔗</div>
+      <div class="tc-title">ParentID = 0 means this is the root</div>
+      <div class="tc-body">An Opportunity has no parent. ParentTransactionID = 0 and SourceTransactionID = 0. Every child transaction (Quote, SO, Invoice) will set these fields pointing back to 652118.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="tc-icon">🏷️</div>
+      <div class="tc-title">SubType is NULL — intentionally</div>
+      <div class="tc-body">An Opportunity has no SubType. NULL SubType + TransactionType = PreSale is the precise identifier for an Opportunity row. As soon as a Quote is created, a new row is inserted with SubType = "Quote".</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="tc-icon">💰</div>
+      <div class="tc-title">Total ≠ Balance at this stage</div>
+      <div class="tc-body">Total = 2,507 is an estimated value. Balance = 0 because no invoice has been issued yet. Balance becomes meaningful at the Invoice stage when actual payment tracking begins.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="tc-icon">🤝</div>
+      <div class="tc-title">6 associate slots track the influencer network</div>
+      <div class="tc-body">Party1–Party6 capture everyone who has a hand in bringing the customer: architect, designer, contractor, builder, brand, and referrer. These IDs carry forward into all child transactions for commission and attribution tracking.</div>
+    </div>
+  </div>
+
+</div>
+<div class="divider"></div>
+<!-- ════ END: presales-opportunity ════ -->
+<div id="presales-selection">
+
+  <!-- HEADER -->
+  <div class="step-header">
+    <div class="step-badge presale">PreSale · SubType = SelectionSheet</div>
+    <h3 class="step-title">Visit</h3>
+
+    <p class="step-intro">
+      A Visit captures <strong>customer interaction</strong> — showroom visits, discussions,
+      selections, and notes. It does not affect pricing or financials but enriches
+      the opportunity with context.
+    </p>
+
+    <div class="step-meta-pills">
+      <span class="smp smp-type">TransactionType = <strong>PreSale</strong></span>
+      <span class="smp smp-sub">SubType = <strong>SelectionSheet</strong></span>
+      <span class="smp smp-party">Linked to Opportunity</span>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="step-section-label">What happens when you create a Visit</div>
+
+  <div class="step-flow-visual">
+    <div class="sfv-step active">
+      <div class="sfv-icon">👥</div>
+      <div class="sfv-label">Customer Visit</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">📝</div>
+      <div class="sfv-label">Notes Captured</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">💾</div>
+      <div class="sfv-label">Saved</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🔗</div>
+      <div class="sfv-label">Linked to Opportunity</div>
+    </div>
+  </div>
+
+  <!-- FORM → TH -->
+  <div class="step-section-label">Visit fields → TransactionHeader</div>
+
+  <div class="form-th-map">
+
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">📅</span>
+        <span class="fthm-panel-title">Visit Details</span>
+      </div>
+
+      <table class="fthm-table">
+        <tbody>
+
+          <tr>
+            <td>Visit Date</td>
+            <td class="val">04/22/2026</td>
+            <td class="col">TransactionDate</td>
+            <td>Date of interaction</td>
+          </tr>
+
+          <tr>
+            <td>Visit Time</td>
+            <td class="val">08:38 PM</td>
+            <td class="col">TransactionTime</td>
+            <td>Captured separately</td>
+          </tr>
+
+          <tr>
+            <td>Sales Person</td>
+            <td class="val">Amilca Archelus</td>
+            <td class="col">SalesPerson2ID</td>
+            <td>Visit handler</td>
+          </tr>
+
+          <tr>
+            <td>Price Level</td>
+            <td class="val">CM2</td>
+            <td class="col">TPriceLevel</td>
+            <td>Inherited pricing context</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">📝</span>
+        <span class="fthm-panel-title">Notes Handling</span>
+      </div>
+
+      <table class="fthm-table">
+        <tbody>
+
+          <tr>
+            <td>Append Special Instructions</td>
+            <td class="val">Yes</td>
+            <td class="col">SpecialInstructions</td>
+            <td>Appended (NOT replaced)</td>
+          </tr>
+
+          <tr>
+            <td>Append Internal Notes</td>
+            <td class="val">Yes</td>
+            <td class="col">InternalNotes</td>
+            <td>Appended log-style</td>
+          </tr>
+
+          <tr>
+            <td>Printed Notes</td>
+            <td class="val">Printed Notes</td>
+            <td class="col">PrintedNotes</td>
+            <td>Visible output</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- LINEAGE -->
+  <div class="step-section-label">Visit vs Quote — Structural Difference</div>
+
+  <div class="lineage-diagram">
+
+    <div class="ld-node origin">
+      <div class="ld-node-title">Opportunity</div>
+      <div class="ld-node-meta">ID: 2519859</div>
+    </div>
+
+    <div class="ld-branch-wrap">
+      <div class="ld-branch-children">
+
+        <div class="ld-node child quote">
+          <div class="ld-node-title">Quote</div>
+          <div class="ld-node-meta">
+            SourceID = Opportunity<br>
+            Financial Flow
+          </div>
+        </div>
+
+        <div class="ld-node child sample">
+          <div class="ld-node-title">Visit</div>
+          <div class="ld-node-meta">
+            SourceID = 0 ❗<br>
+            Interaction Only
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="step-section-label">Key takeaways</div>
+
+  <div class="takeaways-grid">
+
+    <div class="takeaway-card">
+      <div class="tc-title">Not Financial</div>
+      <div class="tc-body">
+        Visit does not impact pricing, totals, or invoices
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Append Behavior</div>
+      <div class="tc-body">
+        Notes are appended — not overwritten
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Same TransactionNumber</div>
+      <div class="tc-body">
+        Visit shares TN with Opportunity → acts like a log entry
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Parallel Record</div>
+      <div class="tc-body">
+        Exists alongside Quote — not in its chain
+      </div>
+    </div>
+
+  </div>
+
+</div>
+    <div class="divider"></div>
+<div id="presales-sample">
+
+  <!-- HEADER -->
+  <div class="step-header">
+    <div class="step-badge presale">PreSale · SubType = SampleOrder</div>
+    <h3 class="step-title">Sample Order</h3>
+
+    <p class="step-intro">
+      A Sample Order is used to <strong>send materials or samples</strong> to the customer
+      before finalizing a quote. It captures delivery logistics but does not generate
+      any financial transaction.
+    </p>
+
+    <div class="step-meta-pills">
+      <span class="smp smp-type">TransactionType = <strong>PreSale</strong></span>
+      <span class="smp smp-sub">SubType = <strong>SampleOrder</strong></span>
+      <span class="smp smp-party">Non-financial</span>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="step-section-label">What happens when you create Sample Order</div>
+
+  <div class="step-flow-visual">
+    <div class="sfv-step active">
+      <div class="sfv-icon">📦</div>
+      <div class="sfv-label">Select Samples</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🚚</div>
+      <div class="sfv-label">Enter Delivery</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">💾</div>
+      <div class="sfv-label">Save</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🔗</div>
+      <div class="sfv-label">Linked to Opportunity</div>
+    </div>
+  </div>
+
+  <!-- FORM → TH -->
+  <div class="step-section-label">Sample Order fields → TransactionHeader</div>
+
+  <div class="form-th-map">
+
+    <!-- DELIVERY -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🚚</span>
+        <span class="fthm-panel-title">Delivery & Shipping</span>
+      </div>
+
+      <table class="fthm-table">
+        <tbody>
+
+          <tr>
+            <td>Delivery Type</td>
+            <td class="val">Delivery</td>
+            <td class="col">DeliveryType</td>
+            <td>Defines fulfillment mode</td>
+          </tr>
+
+          <tr>
+            <td>Ship To Contact</td>
+            <td class="val">Billing Initial Test</td>
+            <td class="col">ShipToContactID</td>
+            <td>Customer contact reference</td>
+          </tr>
+
+          <tr>
+            <td>Address</td>
+            <td class="val">11601 Biscayne Blvd</td>
+            <td class="col">ShipToAddress</td>
+            <td>Delivery location</td>
+          </tr>
+
+          <tr>
+            <td>City / State / Zip</td>
+            <td class="val">Miami / FL / 33181</td>
+            <td class="col">ShipToCity + ShipToState + ShipToZip</td>
+            <td>Stored as snapshot</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- NOTES -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">📝</span>
+        <span class="fthm-panel-title">Notes Behavior</span>
+      </div>
+
+      <table class="fthm-table">
+        <tbody>
+
+          <tr>
+            <td>Special Instructions</td>
+            <td class="val">Appended</td>
+            <td class="col">SpecialInstructions</td>
+            <td>Added to Opportunity log</td>
+          </tr>
+
+          <tr>
+            <td>Internal Notes</td>
+            <td class="val">Appended</td>
+            <td class="col">InternalNotes</td>
+            <td>Audit trail</td>
+          </tr>
+
+          <tr>
+            <td>Printed Notes</td>
+            <td class="val">Printed Notes</td>
+            <td class="col">PrintedNotes</td>
+            <td>Visible output</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- STRUCTURE -->
+  <div class="step-section-label">Where Sample Order fits</div>
+
+  <div class="lineage-diagram">
+
+    <div class="ld-node origin">
+      <div class="ld-node-title">Opportunity</div>
+    </div>
+
+    <div class="ld-branch-wrap">
+      <div class="ld-branch-children">
+
+        <div class="ld-node child sample">
+          <div class="ld-node-title">Visit</div>
+          <div class="ld-node-meta">Interaction</div>
+        </div>
+
+        <div class="ld-node child sample">
+          <div class="ld-node-title">Sample Order</div>
+          <div class="ld-node-meta">Physical Execution</div>
+        </div>
+
+        <div class="ld-node child quote">
+          <div class="ld-node-title">Quote</div>
+          <div class="ld-node-meta">Financial</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="step-section-label">Key takeaways</div>
+
+  <div class="takeaways-grid">
+
+    <div class="takeaway-card">
+      <div class="tc-title">No Financial Impact</div>
+      <div class="tc-body">
+        Sample Order does not affect totals or invoices
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Adds Logistics</div>
+      <div class="tc-body">
+        Unlike Visit, it captures delivery details
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Same Transaction Number</div>
+      <div class="tc-body">
+        Works as an extension of Opportunity
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Append System</div>
+      <div class="tc-body">
+        Notes are appended, not overwritten
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
     <div class="divider"></div>
 
-    <div id="presales-quote"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Quote</h3>
-    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Quote · Stage = Quoted · Formal pricing document sent to customer.</p>
-    <div class="pending-section">
-      <div class="pending-icon">📸</div>
-      <div class="pending-title">Screenshots pending</div>
-      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
-    </div></div>
+    
+<div class="divider"></div>
+    <div id="presales-quote">
+
+  <!-- STEP HEADER -->
+  <div class="step-header">
+    <div class="step-badge presale">PreSale · SubType = Quote</div>
+    <h3 class="step-title">Quote</h3>
+
+    <p class="step-intro">
+      A Quote is the <strong>first financial commitment layer</strong> in the lifecycle.
+      Unlike Opportunity, it contains <strong>pricing, delivery details, and validity</strong>.
+      Multiple quotes can be created for the same opportunity to explore different pricing,
+      configurations, or revisions.
+    </p>
+
+    <div class="step-meta-pills">
+      <span class="smp smp-type">TransactionType = <strong>PreSale</strong></span>
+      <span class="smp smp-sub">TransactionSubType = <strong>Quote</strong></span>
+      <span class="smp smp-stage">Status = <strong>Quoted</strong></span>
+      <span class="smp smp-party">Linked to Opportunity</span>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="step-section-label">What happens when you save Quote</div>
+
+  <div class="step-flow-visual">
+    <div class="sfv-step active">
+      <div class="sfv-icon">📝</div>
+      <div class="sfv-label">Fill Quote</div>
+      <div class="sfv-sub">Pricing · Delivery · Terms</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">💾</div>
+      <div class="sfv-label">Save</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🔗</div>
+      <div class="sfv-label">Linked</div>
+      <div class="sfv-sub">Parent = Opportunity</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">📊</div>
+      <div class="sfv-label">Versioned</div>
+      <div class="sfv-sub">TransactionSubID</div>
+    </div>
+  </div>
+
+  <!-- CORE MAPPING -->
+  <div class="step-section-label">Quote-specific fields → TransactionHeader</div>
+
+  <div class="form-th-map">
+
+    <!-- QUOTE DETAILS -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">💰</span>
+        <span class="fthm-panel-title">Quote Details</span>
+      </div>
+
+      <table class="fthm-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Value</th>
+            <th>TH Column</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td>Quote Date</td>
+            <td class="val">04/22/2026</td>
+            <td class="col">TransactionDate</td>
+            <td>When quote is created</td>
+          </tr>
+
+          <tr>
+            <td>Expiry Date</td>
+            <td class="val">05/27/2026</td>
+            <td class="col">ExpiryDate</td>
+            <td>Validity of quote</td>
+          </tr>
+
+          <tr>
+            <td>Payment Terms</td>
+            <td class="val">Net Terms</td>
+            <td class="col">PaymentTerms / TermsID</td>
+            <td>Controls invoice payment cycle</td>
+          </tr>
+
+          <tr>
+            <td>Price Level</td>
+            <td class="val">CM2</td>
+            <td class="col">TPriceLevel</td>
+            <td>Pricing tier applied</td>
+          </tr>
+
+          <tr>
+            <td>Status</td>
+            <td class="val">Quoted</td>
+            <td class="col">TransactionStatus</td>
+            <td>Quote lifecycle state</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SHIPPING -->
+    <div class="fthm-panel">
+      <div class="fthm-panel-header">
+        <span class="fthm-panel-icon">🚚</span>
+        <span class="fthm-panel-title">Shipping Details</span>
+      </div>
+
+      <table class="fthm-table">
+        <tbody>
+          <tr>
+            <td>Delivery Type</td>
+            <td class="val">Delivery</td>
+            <td class="col">DeliveryType</td>
+            <td>Defines fulfillment method</td>
+          </tr>
+
+          <tr>
+            <td>Ship To Address</td>
+            <td class="val">Miami</td>
+            <td class="col">ShipTo*</td>
+            <td>Copied snapshot from Opportunity</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- LINEAGE -->
+  <div class="step-section-label">Quote linkage & multiple versions</div>
+
+  <div class="lineage-diagram">
+
+    <div class="ld-node origin">
+      <div class="ld-node-title">Opportunity</div>
+      <div class="ld-node-meta">ID: 2519859</div>
+    </div>
+
+    <div class="ld-branch-wrap">
+      <div class="ld-branch-children">
+
+        <div class="ld-node child quote">
+          <div class="ld-node-title">Quote #1</div>
+          <div class="ld-node-meta">
+            ParentID = 2519859<br>
+            SubID = 1
+          </div>
+        </div>
+
+        <div class="ld-node child quote">
+          <div class="ld-node-title">Quote #2</div>
+          <div class="ld-node-meta">
+            ParentID = 2519859<br>
+            SubID = 2
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="step-section-label">Key takeaways</div>
+
+  <div class="takeaways-grid">
+
+    <div class="takeaway-card">
+      <div class="tc-title">Multiple Quotes</div>
+      <div class="tc-body">
+        One opportunity → many quotes (versions or options)
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Parent Link</div>
+      <div class="tc-body">
+        Every quote points to Opportunity using ParentTransactionID
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Version Control</div>
+      <div class="tc-body">
+        TransactionSubID differentiates multiple quotes
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
     <div class="divider"></div>
+    
+    <div id="presales-hold">
 
-    <div id="presales-hold"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Hold</h3>
-    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = Hold · Stage = Hold · Inventory reserved while customer decides.</p>
-    <div class="pending-section">
-      <div class="pending-icon">📸</div>
-      <div class="pending-title">Screenshots pending</div>
-      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
-    </div></div>
+  <!-- HEADER -->
+  <div class="step-header">
+    <div class="step-badge presale">PreSale · SubType = Hold</div>
+    <h3 class="step-title">Hold</h3>
 
-    <div class="divider"></div>
+    <p class="step-intro">
+      A Hold is used to <strong>pause the opportunity</strong> while preserving the
+      latest working state. It captures a snapshot of all accumulated data
+      (notes, delivery, customer details) and prevents further progression
+      until resumed.
+    </p>
 
-    <div id="presales-sample"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Sample Order</h3>
-    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = SampleOrder · Product samples sent for customer approval.</p>
-    <div class="pending-section">
-      <div class="pending-icon">📸</div>
-      <div class="pending-title">Screenshots pending</div>
-      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
-    </div></div>
+    <div class="step-meta-pills">
+      <span class="smp smp-type">TransactionType = <strong>PreSale</strong></span>
+      <span class="smp smp-sub">SubType = <strong>Hold</strong></span>
+      <span class="smp smp-stage">Status = <strong>On Hold</strong></span>
+    </div>
+  </div>
 
-    <div class="divider"></div>
+  <!-- FLOW -->
+  <div class="step-section-label">What happens when Hold is created</div>
 
-    <div id="presales-selection"><h3 style="font-size:18px;font-weight:600;margin-bottom:8px;">Selection Sheet</h3>
-    <p style="color:var(--text-sec);font-size:14px;margin-bottom:20px;">SubType = SelectionSheet · Product selection document for customer review.</p>
-    <div class="pending-section">
-      <div class="pending-icon">📸</div>
-      <div class="pending-title">Screenshots pending</div>
-      <div class="pending-note">Share form screenshot + TransactionHeader output → this section will be generated</div>
-    </div></div>
+  <div class="step-flow-visual">
+    <div class="sfv-step active">
+      <div class="sfv-icon">📊</div>
+      <div class="sfv-label">Current State</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🧠</div>
+      <div class="sfv-label">Snapshot Taken</div>
+    </div>
+    <div class="sfv-arrow">→</div>
+    <div class="sfv-step">
+      <div class="sfv-icon">🛑</div>
+      <div class="sfv-label">Marked On Hold</div>
+    </div>
+  </div>
+
+  <!-- SOURCE LOGIC -->
+  <div class="step-section-label">Source linkage behavior</div>
+
+  <div class="auto-cols-grid">
+
+    <div class="auto-col-card">
+      <div class="auto-col-name">ParentTransactionID</div>
+      <div class="auto-col-val">2519859</div>
+      <div class="auto-col-desc">Always points to Opportunity</div>
+    </div>
+
+    <div class="auto-col-card">
+      <div class="auto-col-name">SourceTransactionID</div>
+      <div class="auto-col-val">2519862</div>
+      <div class="auto-col-desc">Points to LAST working record (Sample Order)</div>
+    </div>
+
+  </div>
+
+  <!-- STRUCTURE -->
+  <div class="step-section-label">Where Hold fits</div>
+
+  <div class="lineage-diagram">
+
+    <div class="ld-node origin">
+      <div class="ld-node-title">Opportunity</div>
+    </div>
+
+    <div class="ld-branch-wrap">
+      <div class="ld-branch-children">
+
+        <div class="ld-node child sample">
+          <div class="ld-node-title">Visit</div>
+        </div>
+
+        <div class="ld-node child sample">
+          <div class="ld-node-title">Sample Order</div>
+        </div>
+
+        <div class="ld-node child hold">
+          <div class="ld-node-title">Hold</div>
+          <div class="ld-node-meta">
+            Source = Sample Order<br>
+            State Freeze
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="step-section-label">Key takeaways</div>
+
+  <div class="takeaways-grid">
+
+    <div class="takeaway-card">
+      <div class="tc-title">Snapshot Behavior</div>
+      <div class="tc-body">
+        Hold captures the latest accumulated data state
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Unique Source Logic</div>
+      <div class="tc-body">
+        SourceTransactionID points to last working record (not Opportunity)
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">State Control</div>
+      <div class="tc-body">
+        Used to pause deal progression
+      </div>
+    </div>
+
+    <div class="takeaway-card">
+      <div class="tc-title">Data Accumulation</div>
+      <div class="tc-body">
+        Combines data from Opportunity + Visit + Sample Order
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+    
+
+
   </section>
 
   <!-- MODULE: PURCHASES -->
