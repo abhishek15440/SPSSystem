@@ -105,3 +105,75 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.classList.remove('open');
   });
 });
+
+/* ════════════════════════════════════════════════════════════
+   PRESALES · OPPORTUNITY — JS additions
+   Append these to your existing script.js
+════════════════════════════════════════════════════════════ */
+
+// ── LIFECYCLE MODULE TOGGLE ──
+// (Add this if not already present from the lifecycle section)
+function lcToggle(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+// ── FTHM TABLE ROW HIGHLIGHT ──
+// Clicking a form→TH mapping row highlights the matching TH snapshot row
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Highlight TH snapshot rows on fthm row hover
+  document.querySelectorAll('.fthm-table tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function () {
+      const colCell = this.querySelector('td.col');
+      if (!colCell) return;
+      const colName = colCell.textContent.trim().split('+')[0].trim();
+      document.querySelectorAll('.ths-col').forEach(c => {
+        const match = c.textContent.trim().toLowerCase().includes(colName.toLowerCase().substring(0, 8));
+        if (match) {
+          c.closest('.ths-row').style.background = 'rgba(240,165,0,0.08)';
+        }
+      });
+    });
+    row.addEventListener('mouseleave', function () {
+      document.querySelectorAll('.ths-row').forEach(r => {
+        r.style.background = '';
+      });
+    });
+  });
+
+  // Update column search to also search table rows in the new section
+  const existingSearch = document.getElementById('colSearch');
+  if (existingSearch) {
+    existingSearch.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      if (!q) return;
+      // Also highlight matching fthm rows
+      document.querySelectorAll('.fthm-table tbody tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.background = text.includes(q) ? 'rgba(240,165,0,0.06)' : '';
+      });
+      // Also highlight TH snapshot rows
+      document.querySelectorAll('.ths-row').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.background = text.includes(q) ? 'rgba(240,165,0,0.08)' : '';
+      });
+    });
+  }
+
+});
+
+// ── MATRIX TOGGLE (if not already present) ──
+function toggleMatrix() {
+  const table = document.getElementById('matrixTable');
+  if (table) table.classList.toggle('matrix-collapsed');
+}
+// Highlight linkage between quotes and opportunity
+document.querySelectorAll('#presales-quote .ld-node').forEach(node => {
+  node.addEventListener('mouseenter', () => {
+    node.style.transform = 'scale(1.03)';
+  });
+  node.addEventListener('mouseleave', () => {
+    node.style.transform = 'scale(1)';
+  });
+});
